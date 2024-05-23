@@ -14,18 +14,16 @@ jobs:
   buildx:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      -
-        # Add support for more platforms with QEMU (optional)
+
+      - # Add support for more platforms with QEMU (optional)
         # https://github.com/docker/setup-qemu-action
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log into GitHub Container Registry
         # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -44,4 +42,4 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            docker buildx build . --file Dockerfile --tag $IMAGE_ID:$VERSION --platform linux/arm64 --push
+            docker buildx build . --file Dockerfile --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --push
