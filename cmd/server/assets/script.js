@@ -1,4 +1,4 @@
-const socket = new WebSocket("ws://localhost:8000/ws");
+const socket = new WebSocket("ws://" + window.location.host + "/ws");
 
 socket.addEventListener("message", (event) => {
     if (event.data !== "ping") {
