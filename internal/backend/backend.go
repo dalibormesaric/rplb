@@ -9,28 +9,37 @@ import (
 	"time"
 )
 
-type backend struct {
+type Backend struct {
+	Name          string
 	Url           string
-	proxy         *httputil.ReverseProxy
-	alive         bool
-	monitorClient http.Client
-	Monitor       []monitorFrame
+	Proxy         *httputil.ReverseProxy
+	Alive         bool
+	MonitorClient http.Client
+	Monitor       []MonitorFrame
 }
 
-type monitorFrame struct {
-	Live    bool
-	Latency time.Duration
+type MonitorFrame struct {
+	Live      bool
+	Latency   time.Duration
+	ColorCode int64
+}
+
+type LiveMonitorFrame struct {
+	Name      string
+	Alive     bool
+	Latency   string
+	ColorCode int64
 }
 
 const (
 	monitorTimeout = 2 * time.Second
 )
 
-func CreateBackends() *map[string][]*backend {
-	return &map[string][]*backend{}
+func CreateBackends() map[string][]*Backend {
+	return make(map[string][]*Backend)
 }
 
-func CreateBackend(urlString string) (*backend, error) {
+func CreateBackend(key, urlString string) (*Backend, error) {
 	urlParsed, err := url.Parse(urlString)
 	if err != nil {
 		return nil, err
@@ -38,12 +47,13 @@ func CreateBackend(urlString string) (*backend, error) {
 
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
 
-	return &backend{
+	return &Backend{
+		string(Strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
 		urlString,
 		proxy,
 		false,
 		http.Client{Timeout: monitorTimeout},
-		[]monitorFrame{},
+		[]MonitorFrame{},
 	}, nil
 }
 
@@ -71,4 +81,27 @@ func GetUrlsForNames(nameUrlPairs string) (map[string][]string, error) {
 	}
 
 	return result, nil
+}
+
+func Strip(s []byte) []byte {
+	n := 0
+	for _, b := range s {
+		if ('a' <= b && b <= 'z') ||
+			('A' <= b && b <= 'Z') ||
+			('0' <= b && b <= '9') ||
+			b == ' ' {
+			s[n] = b
+			n++
+		}
+	}
+	return s[:n]
+}
+
+func GetAlive(backends []*Backend) (liveBackends []*Backend) {
+	for _, b := range backends {
+		if b.Alive {
+			liveBackends = append(liveBackends, b)
+		}
+	}
+	return
 }

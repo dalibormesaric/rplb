@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPLB</title>
+    <link rel="stylesheet" type="text/css" href="assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="left-container">
+            <div class="logo-container">
+                <a class="logo clean-link" href="#">RPLB</a>
+            </div>
+            <div class="left-menu">
+                <ul>
+                    <li><a class="clean-link" href="#">Monitor</a></li>
+                    <li><a class="clean-link" href="#">Traffic</a></li>
+                </ul>
+            </div>
+            <div class="footer">
+                started {{ printSince }}
+            </div>
+        </nav>
+
+        <main>
+            <div class="content">
+                {{block "content" .}}
+                {{end}}
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/script.js"></script>
+</body>
+</html>
