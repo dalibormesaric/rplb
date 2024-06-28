@@ -31,18 +31,14 @@ func main() {
 	log.Println("Starting RPLB...")
 	flag.Parse()
 
-	frontends, _ := frontend.CreateFrontends(*fe)
+	frontends, err := frontend.CreateFrontends(*fe)
+	if err != nil {
+		log.Fatalf("Create frontends: %s", err)
+	}
 
-	backendUrls, _ := backend.GetUrlsForNames(*be)
-	backends := backend.CreateBackends()
-	for k, v := range backendUrls {
-		for _, value := range v {
-			backend, err := backend.CreateBackend(k, value)
-			if err != nil {
-				break
-			}
-			backends[k] = append(backends[k], backend)
-		}
+	backends, err := backend.CreateBackends(*be)
+	if err != nil {
+		log.Fatalf("Create backends: %s", err)
 	}
 
 	// reverse proxy

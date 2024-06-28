@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+type Backends map[string][]*Backend
+
 type Backend struct {
 	Name          string
 	Url           string
@@ -35,11 +37,35 @@ const (
 	monitorTimeout = 2 * time.Second
 )
 
-func CreateBackends() map[string][]*Backend {
-	return make(map[string][]*Backend)
+func CreateBackends(nameUrlPairs string) (Backends, error) {
+	split := strings.Split(nameUrlPairs, ",")
+	if len(split)%2 != 0 {
+		return nil, fmt.Errorf("backends must be a comma-separated list containing even number of items")
+	}
+
+	be := make(Backends)
+
+	for i, v := range split {
+		if v == "" {
+			return nil, fmt.Errorf("nameUrlPair at index %d must have a value", i)
+		}
+
+		if (i+1)%2 == 0 {
+			k := split[i-1]
+			_, ok := be[k]
+			b, _ := createBackend(k, split[i])
+			if !ok {
+				be[k] = []*Backend{b}
+			} else {
+				be[k] = append(be[k], b)
+			}
+		}
+	}
+
+	return be, nil
 }
 
-func CreateBackend(key, urlString string) (*Backend, error) {
+func createBackend(key, urlString string) (*Backend, error) {
 	urlParsed, err := url.Parse(urlString)
 	if err != nil {
 		return nil, err
@@ -48,7 +74,7 @@ func CreateBackend(key, urlString string) (*Backend, error) {
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
 
 	return &Backend{
-		string(Strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
+		string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
 		urlString,
 		proxy,
 		false,
@@ -57,33 +83,33 @@ func CreateBackend(key, urlString string) (*Backend, error) {
 	}, nil
 }
 
-func GetUrlsForNames(nameUrlPairs string) (map[string][]string, error) {
-	split := strings.Split(nameUrlPairs, ",")
-	if len(split)%2 != 0 {
-		return nil, fmt.Errorf("unable to split nameUrlPairs")
-	}
+// func GetUrlsForNames(nameUrlPairs string) (map[string][]string, error) {
+// 	split := strings.Split(nameUrlPairs, ",")
+// 	if len(split)%2 != 0 {
+// 		return nil, fmt.Errorf("unable to split nameUrlPairs")
+// 	}
 
-	result := make(map[string][]string)
-	for i, v := range split {
-		if v == "" {
-			return nil, fmt.Errorf("nameUrlPair at index %d must have a value", i)
-		}
+// 	result := make(map[string][]string)
+// 	for i, v := range split {
+// 		if v == "" {
+// 			return nil, fmt.Errorf("nameUrlPair at index %d must have a value", i)
+// 		}
 
-		if (i+1)%2 == 0 {
-			k := split[i-1]
-			_, ok := result[k]
-			if !ok {
-				result[k] = []string{split[i]}
-			} else {
-				result[k] = append(result[k], split[i])
-			}
-		}
-	}
+// 		if (i+1)%2 == 0 {
+// 			k := split[i-1]
+// 			_, ok := result[k]
+// 			if !ok {
+// 				result[k] = []string{split[i]}
+// 			} else {
+// 				result[k] = append(result[k], split[i])
+// 			}
+// 		}
+// 	}
 
-	return result, nil
-}
+// 	return result, nil
+// }
 
-func Strip(s []byte) []byte {
+func strip(s []byte) []byte {
 	n := 0
 	for _, b := range s {
 		if ('a' <= b && b <= 'z') ||
