@@ -1,30 +1,28 @@
-package server
+package backend
 
 import (
 	"fmt"
 	"math"
 	"time"
-
-	"github.com/dalibormesaric/rplb/internal/backend"
 )
 
-type server struct {
-	Backends map[string][]*backend.Backend
-	messages chan interface{}
+type Monitor struct {
+	Backends Backends
+	Messages chan interface{}
 }
 
-func NewServer(backends map[string][]*backend.Backend, messages chan interface{}) *server {
-	return &server{
-		Backends: backends,
-		messages: messages,
+func (b Backends) NewMonitor() *Monitor {
+	return &Monitor{
+		Backends: b,
+		Messages: make(chan interface{}),
 	}
 }
 
-func (s *server) Monitor() {
+func (m *Monitor) Run() {
 	for {
-		for _, v := range s.Backends {
+		for _, v := range m.Backends {
 			for _, b := range v {
-				go func(b *backend.Backend) {
+				go func(b *Backend) {
 					start := time.Now()
 					res, err := b.MonitorClient.Get(b.Url)
 					latency := time.Since(start)
@@ -48,9 +46,9 @@ func (s *server) Monitor() {
 					case d >= 110:
 						colorCode = 1000
 					}
-					mf := backend.MonitorFrame{Live: b.Alive, Latency: latency, ColorCode: colorCode}
-					lmf := backend.LiveMonitorFrame{Name: b.Name, Alive: b.Alive, Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
-					s.messages <- lmf
+					mf := MonitorFrame{Live: b.Alive, Latency: latency, ColorCode: colorCode}
+					lmf := LiveMonitorFrame{Name: b.Name, Alive: b.Alive, Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
+					m.Messages <- lmf
 					b.Monitor = last20(append(b.Monitor, mf))
 				}(b)
 			}
@@ -59,7 +57,7 @@ func (s *server) Monitor() {
 	}
 }
 
-func last20(m []backend.MonitorFrame) []backend.MonitorFrame {
+func last20(m []MonitorFrame) []MonitorFrame {
 	l := int(math.Max(0, float64(len(m)-20)))
 	return m[l:]
 }

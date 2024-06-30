@@ -5,13 +5,12 @@ import (
 	"flag"
 	"html/template"
 	"log"
-	"math/rand"
-	"net"
 	"net/http"
 	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
+	"github.com/dalibormesaric/rplb/internal/reverseproxy"
 	"github.com/dalibormesaric/rplb/internal/server"
 )
 
@@ -40,39 +39,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Create backends: %s", err)
 	}
+	monitor := backends.NewMonitor()
+	go monitor.Run()
 
-	// reverse proxy
-	rpMux := http.NewServeMux()
-	rpMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		host, _, _ := net.SplitHostPort(r.Host)
-		f := frontends.Get(host)
-		if f == nil {
-			log.Printf("Unknown frontend host: %s\n", host)
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-		f.Inc()
-		// log.Println(f.BackendName)
-		liveBackends := backend.GetAlive(backends[f.BackendName])
-
-		if len(liveBackends) > 0 {
-			randBackend := rand.Intn(len(liveBackends))
-
-			// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
-			liveBackends[randBackend].Proxy.ServeHTTP(w, r)
-		} else {
-			w.WriteHeader(http.StatusServiceUnavailable)
-		}
-	})
-	go http.ListenAndServe(":8080", rpMux)
+	go reverseproxy.ListenAndServe(frontends, backends)
 
 	// dashboard
-	wsServer := server.New()
+	// move wsServer to dashboard package
+	wsServer := server.New(monitor.Messages)
 	http.HandleFunc("/ws", wsServer.WsHandler)
 	go wsServer.Broadcaster()
-
-	server := server.NewServer(backends, wsServer.Messages)
-	go server.Monitor()
 
 	http.Handle("/assets/", http.StripPrefix("/", http.FileServer(http.FS(assets))))
 

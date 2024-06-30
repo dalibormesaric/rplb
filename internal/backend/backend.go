@@ -83,32 +83,6 @@ func createBackend(key, urlString string) (*Backend, error) {
 	}, nil
 }
 
-// func GetUrlsForNames(nameUrlPairs string) (map[string][]string, error) {
-// 	split := strings.Split(nameUrlPairs, ",")
-// 	if len(split)%2 != 0 {
-// 		return nil, fmt.Errorf("unable to split nameUrlPairs")
-// 	}
-
-// 	result := make(map[string][]string)
-// 	for i, v := range split {
-// 		if v == "" {
-// 			return nil, fmt.Errorf("nameUrlPair at index %d must have a value", i)
-// 		}
-
-// 		if (i+1)%2 == 0 {
-// 			k := split[i-1]
-// 			_, ok := result[k]
-// 			if !ok {
-// 				result[k] = []string{split[i]}
-// 			} else {
-// 				result[k] = append(result[k], split[i])
-// 			}
-// 		}
-// 	}
-
-// 	return result, nil
-// }
-
 func strip(s []byte) []byte {
 	n := 0
 	for _, b := range s {

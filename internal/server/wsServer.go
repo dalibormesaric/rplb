@@ -16,11 +16,11 @@ type WsServer struct {
 	Messages chan interface{}
 }
 
-func New() *WsServer {
+func New(messages chan interface{}) *WsServer {
 	return &WsServer{
 		entering: make(chan *websocket.Conn),
 		leaving:  make(chan *websocket.Conn),
-		Messages: make(chan interface{}),
+		Messages: messages,
 	}
 }
 
