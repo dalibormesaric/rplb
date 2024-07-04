@@ -1,18 +1,86 @@
 /* CSS Reset */
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
     margin: 0;
     padding: 0;
     border: 0;
@@ -23,8 +91,17 @@ time, mark, audio, video {
 }
 
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
     display: block;
 }
 
@@ -32,16 +109,20 @@ body {
     line-height: 1;
 }
 
-ol, ul {
+ol,
+ul {
     list-style: none;
 }
 
-blockquote, q {
+blockquote,
+q {
     quotes: none;
 }
 
-blockquote:before, blockquote:after,
-q:before, q:after {
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
     content: '';
     content: none;
 }
@@ -53,9 +134,12 @@ table {
 
 /* Basic styles for the link */
 a.clean-link {
-    text-decoration: none; /* Removes the underline */
-    color: #000000; /* Default link color (blue) */
-    transition: color 0.3s ease; /* Smooth transition for color change */
+    text-decoration: none;
+    /* Removes the underline */
+    color: #000000;
+    /* Default link color (blue) */
+    transition: color 0.3s ease;
+    /* Smooth transition for color change */
 }
 
 /* Hover effect */
@@ -65,7 +149,8 @@ a.clean-link:hover {
 
 /* Optional: Focus effect for accessibility */
 a.clean-link:focus {
-    outline: none; /* Removes the default focus outline */
+    outline: none;
+    /* Removes the default focus outline */
 }
 
 .left-container {
@@ -83,14 +168,10 @@ a.clean-link:focus {
     flex-direction: row;
 }
 
-/* Container for the logo */
-.logo-container {
-    padding: 30px 0px;
-}
-
 /* Style for the logo */
-.logo {
-    margin: 50px;
+.logo-container a {
+    padding: 30px 50px;
+    display: block;
     font-weight: bold;
     font-size: x-large;
 }
@@ -104,14 +185,22 @@ a.clean-link:focus {
     overflow-x: hidden;
 }
 
+.menu-selected {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 .left-menu ul {
     list-style-type: none;
     padding: 0;
 }
 
 .left-menu ul li {
-    padding: 30px 50px;
     text-align: left;
+}
+
+.left-menu ul li a {
+    display: block;
+    padding: 30px 50px;
 }
 
 .footer {
@@ -154,67 +243,142 @@ main {
 
 .monitor-group {
     display: flex;
-    flex-direction: column; /* Changed to column */
+    flex-direction: column;
+    /* Changed to column */
 }
+
 .monitor {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-bottom: 20px; /* Add margin between monitors */
+    margin-bottom: 20px;
+    /* Add margin between monitors */
 }
+
 .monitor-name {
     font-weight: bold;
     margin-bottom: 10px;
 }
+
 .monitor-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-gap: 5px;
     width: 200px;
 }
+
 .latency-cell {
     width: 100%;
-    padding-bottom: 100%; /* Maintain square shape */
-    background-color: #d3d3d3; /* Default to light gray for unavailable */
+    padding-bottom: 100%;
+    /* Maintain square shape */
+    background-color: #d3d3d3;
+    /* Default to light gray for unavailable */
     transition: background-color 0.5s;
 }
+
 .latency-0 {
     background-color: #d3d3d3;
 }
+
 .latency-5 {
     background-color: #06d6a0;
 }
+
 .latency-10 {
     background-color: #29d598;
 }
+
 .latency-20 {
     background-color: #41d592;
 }
+
 .latency-30 {
     background-color: #59d58d;
 }
+
 .latency-40 {
     background-color: #6ed488;
 }
+
 .latency-50 {
     background-color: #81d483;
 }
+
 .latency-60 {
     background-color: #9ad37d;
 }
+
 .latency-70 {
     background-color: #b1d378;
 }
+
 .latency-80 {
     background-color: #c6d273;
 }
+
 .latency-90 {
     background-color: #e3d26d;
 }
+
 .latency-100 {
     background-color: #ffd166;
 }
+
 .latency-100 {
     background-color: #ef476f;
+}
+
+/* T R A F F I C */
+
+.cir {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 5px;
+    height: 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+/* @keyframes fly-ball {
+    100% {
+        transform: translateX(300px) translateY(100px);
+    }
+} */
+
+.traffic-container {
+    display: flex;
+    flex-direction: row;
+
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 auto 30px auto;
+    width: 40vw;
+    min-width: 400px;
+}
+
+.traffic-container li {
+    margin: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.traffic-counter {
+    margin-top: 4px;
+    font-size: 0.6em;
+    text-transform: uppercase;
+    color: #a3a3a3;
+}
+
+.traffic-frontends {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+}
+
+.traffic-backends {
+    margin-left: auto;
 }

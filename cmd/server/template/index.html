@@ -10,12 +10,12 @@
     <div class="container">
         <nav class="left-container">
             <div class="logo-container">
-                <a class="logo clean-link" href="#">RPLB</a>
+                <a class="clean-link" href="/">RPLB</a>
             </div>
             <div class="left-menu">
                 <ul>
-                    <li><a class="clean-link" href="#">Monitor</a></li>
-                    <li><a class="clean-link" href="#">Traffic</a></li>
+                    <li><a class='clean-link{{ menuSelected .SelectedMenu "monitor" }}' href="/monitor">Monitor</a></li>
+                    <li><a class='clean-link{{ menuSelected .SelectedMenu "traffic" }}' href="/traffic">Traffic</a></li>
                 </ul>
             </div>
             <div class="footer">

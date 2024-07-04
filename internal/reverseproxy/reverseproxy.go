@@ -10,7 +10,18 @@ import (
 	"github.com/dalibormesaric/rplb/internal/frontend"
 )
 
-func ListenAndServe(frontends frontend.Frontends, backends backend.Backends) {
+type TrafficFrame struct {
+	Type string
+	Name string
+	Hits int64
+}
+
+type TrafficBackendFrame struct {
+	*TrafficFrame
+	FrontendName string
+}
+
+func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, messages chan interface{}) {
 	rpMux := http.NewServeMux()
 	rpMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		host, _, _ := net.SplitHostPort(r.Host)
@@ -20,17 +31,22 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-		f.Inc()
+		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.Inc()}
+		messages <- tf
 		// log.Println(f.BackendName)
-		liveBackends := backend.GetAlive(backends[f.BackendName])
+		liveBackends := backend.GetLive(backends[f.BackendName])
 
 		n := len(liveBackends)
 		if n > 0 {
 			randBackend := rand.Intn(n)
 
 			// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
-			liveBackends[randBackend].Proxy.ServeHTTP(w, r)
+			liveBackend := liveBackends[randBackend]
+			liveBackend.Proxy.ServeHTTP(w, r)
+			tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.Inc()}, FrontendName: host}
+			messages <- tf
 		} else {
+			log.Printf("No live backends for host: %s\n", host)
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
 	})

@@ -27,7 +27,14 @@ func CreateFrontends(urlNamePair string) (Frontends, error) {
 		}
 
 		if (i+1)%2 == 0 {
-			fe[Host(split[i-1])] = &Frontend{
+			host := Host(split[i-1])
+
+			_, ok := fe[host]
+			if ok {
+				return nil, fmt.Errorf("frontend host has to be unique")
+			}
+
+			fe[host] = &Frontend{
 				BackendName: split[i],
 			}
 		}
@@ -40,7 +47,7 @@ func (f Frontends) Get(host string) *Frontend {
 	return f[Host(host)]
 }
 
-func (f *Frontend) Inc() {
+func (f *Frontend) Inc() int64 {
 	f.Hits++
-	fmt.Printf("%s %d\n", f.BackendName, f.Hits)
+	return f.Hits
 }

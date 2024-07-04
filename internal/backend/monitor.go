@@ -27,11 +27,11 @@ func (m *Monitor) Run() {
 					res, err := b.MonitorClient.Get(b.Url)
 					latency := time.Since(start)
 					if err != nil {
-						b.Alive = false
+						b.Live = false
 						latency = 0
 						_ = fmt.Sprintf("%s\n\terror: %v\n", b.Url, err)
 					} else {
-						b.Alive = true
+						b.Live = true
 						_ = fmt.Sprintf("%s\n\tstatus code: %v\n\tlatency: %v\n", b.Url, res.StatusCode, latency)
 					}
 					duration, _ := time.ParseDuration(fmt.Sprintf("%v", latency))
@@ -46,8 +46,8 @@ func (m *Monitor) Run() {
 					case d >= 110:
 						colorCode = 1000
 					}
-					mf := MonitorFrame{Live: b.Alive, Latency: latency, ColorCode: colorCode}
-					lmf := LiveMonitorFrame{Name: b.Name, Alive: b.Alive, Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
+					mf := MonitorFrame{Live: b.Live, Latency: latency, ColorCode: colorCode}
+					lmf := LiveMonitorFrame{Type: "monitor", Name: b.Name, Live: b.Live, Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
 					m.Messages <- lmf
 					b.Monitor = last20(append(b.Monitor, mf))
 				}(b)

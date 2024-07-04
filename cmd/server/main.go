@@ -6,9 +6,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
+	"github.com/dalibormesaric/rplb/internal/dashboard"
 	"github.com/dalibormesaric/rplb/internal/frontend"
 	"github.com/dalibormesaric/rplb/internal/reverseproxy"
 	"github.com/dalibormesaric/rplb/internal/server"
@@ -21,9 +21,8 @@ var content embed.FS
 var assets embed.FS
 
 var (
-	fe    = flag.String("f", "", "frontends")
-	be    = flag.String("b", "", "backends")
-	since = time.Now()
+	fe = flag.String("f", "", "frontends")
+	be = flag.String("b", "", "backends")
 )
 
 func main() {
@@ -42,10 +41,11 @@ func main() {
 	monitor := backends.NewMonitor()
 	go monitor.Run()
 
-	go reverseproxy.ListenAndServe(frontends, backends)
+	go reverseproxy.ListenAndServe(frontends, backends, monitor.Messages)
 
 	// dashboard
 	// move wsServer to dashboard package
+	// TODO: wsServer should produce chan messages
 	wsServer := server.New(monitor.Messages)
 	http.HandleFunc("/ws", wsServer.WsHandler)
 	go wsServer.Broadcaster()
@@ -53,15 +53,25 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/", http.FileServer(http.FS(assets))))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/monitor", http.StatusPermanentRedirect)
+	})
+
+	http.HandleFunc("/monitor", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		a, _ := template.
 			New("index").
-			Funcs(template.FuncMap{
-				"printSince": func() string {
-					return since.Format("2006-01-02 15:04:05")
-				}}).
-			ParseFS(content, "template/*.html")
-		a.ExecuteTemplate(w, "monitor.html", backends)
+			Funcs(dashboard.GetFuncMap()).
+			ParseFS(content, "template/index.html", "template/monitor.html")
+		a.ExecuteTemplate(w, "monitor.html", dashboard.MonitorModel{BaseModel: &dashboard.BaseModel{SelectedMenu: "monitor"}, Backends: backends})
+	})
+
+	http.HandleFunc("/traffic", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		a, _ := template.
+			New("index").
+			Funcs(dashboard.GetFuncMap()).
+			ParseFS(content, "template/index.html", "template/traffic.html")
+		a.ExecuteTemplate(w, "traffic.html", dashboard.TrafficModel{BaseModel: &dashboard.BaseModel{SelectedMenu: "traffic"}, Frontends: frontends, Backends: backends})
 	})
 
 	http.ListenAndServe(":8000", nil)

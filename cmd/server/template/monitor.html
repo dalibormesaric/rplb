@@ -1,12 +1,12 @@
 {{template "index.html" .}}
 
 {{define "content"}}
-    {{if not . }}
+    {{if not .Backends}}
         <div class="monitor-container">
             <p>No backends configured</p>
         </div>
     {{else}}
-        {{range $key, $value := .}}
+        {{range $key, $value := .Backends}}
         <div class="monitor-container">
             <div class="monitor-header">{{$key}}</div>
 

@@ -15,9 +15,10 @@ type Backend struct {
 	Name          string
 	Url           string
 	Proxy         *httputil.ReverseProxy
-	Alive         bool
+	Live          bool
 	MonitorClient http.Client
 	Monitor       []MonitorFrame
+	Hits          int64
 }
 
 type MonitorFrame struct {
@@ -27,8 +28,9 @@ type MonitorFrame struct {
 }
 
 type LiveMonitorFrame struct {
+	Type      string
 	Name      string
-	Alive     bool
+	Live      bool
 	Latency   string
 	ColorCode int64
 }
@@ -80,6 +82,7 @@ func createBackend(key, urlString string) (*Backend, error) {
 		false,
 		http.Client{Timeout: monitorTimeout},
 		[]MonitorFrame{},
+		0,
 	}, nil
 }
 
@@ -97,11 +100,16 @@ func strip(s []byte) []byte {
 	return s[:n]
 }
 
-func GetAlive(backends []*Backend) (liveBackends []*Backend) {
+func GetLive(backends []*Backend) (liveBackends []*Backend) {
 	for _, b := range backends {
-		if b.Alive {
+		if b.Live {
 			liveBackends = append(liveBackends, b)
 		}
 	}
 	return
+}
+
+func (b *Backend) Inc() int64 {
+	b.Hits++
+	return b.Hits
 }
