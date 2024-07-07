@@ -2,6 +2,7 @@ package frontend
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -34,9 +35,11 @@ func CreateFrontends(urlNamePair string) (Frontends, error) {
 				return nil, fmt.Errorf("frontend host has to be unique")
 			}
 
+			backendName := split[i]
 			fe[host] = &Frontend{
-				BackendName: split[i],
+				BackendName: backendName,
 			}
+			log.Printf("Added frontend host (%s) for (%s)\n", host, backendName)
 		}
 	}
 

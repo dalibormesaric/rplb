@@ -27,7 +27,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 		host, _, _ := net.SplitHostPort(r.Host)
 		f := frontends.Get(host)
 		if f == nil {
-			log.Printf("Unknown frontend host: %s\n", host)
+			log.Printf("Unknown frontend host (%s)\n", host)
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -46,7 +46,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 			tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.Inc()}, FrontendName: host}
 			messages <- tf
 		} else {
-			log.Printf("No live backends for host: %s\n", host)
+			log.Printf("No live backends for host (%s)\n", host)
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
 	})

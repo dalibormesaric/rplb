@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -45,7 +46,7 @@ func CreateBackends(nameUrlPairs string) (Backends, error) {
 		return nil, fmt.Errorf("backends must be a comma-separated list containing even number of items")
 	}
 
-	be := make(Backends)
+	backends := make(Backends)
 
 	for i, v := range split {
 		if v == "" {
@@ -54,17 +55,24 @@ func CreateBackends(nameUrlPairs string) (Backends, error) {
 
 		if (i+1)%2 == 0 {
 			k := split[i-1]
-			_, ok := be[k]
-			b, _ := createBackend(k, split[i])
+			_, ok := backends[k]
+			backendUrl := split[i]
+			b, _ := createBackend(k, backendUrl)
 			if !ok {
-				be[k] = []*Backend{b}
+				backends[k] = []*Backend{b}
 			} else {
-				be[k] = append(be[k], b)
+				for _, existingBackend := range backends[k] {
+					if existingBackend.Url == backendUrl {
+						return nil, fmt.Errorf("url (%s) already exist in backend (%s)", backendUrl, k)
+					}
+				}
+				backends[k] = append(backends[k], b)
 			}
+			log.Printf("Added backend url (%s) for (%s)\n", backendUrl, k)
 		}
 	}
 
-	return be, nil
+	return backends, nil
 }
 
 func createBackend(key, urlString string) (*Backend, error) {

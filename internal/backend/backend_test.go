@@ -34,6 +34,7 @@ func TestCreateBackendsErrors(t *testing.T) {
 		{"a,b,c", fmt.Errorf("backends must be a comma-separated list containing even number of items")},
 		{",", fmt.Errorf("nameUrlPair at index 0 must have a value")},
 		{"a,", fmt.Errorf("nameUrlPair at index 1 must have a value")},
+		{"a,b,a,b", fmt.Errorf("url (b) already exist in backend (a)")},
 		{"a,b", nil},
 	}
 

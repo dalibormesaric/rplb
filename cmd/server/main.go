@@ -45,7 +45,7 @@ func main() {
 
 	// dashboard
 	// move wsServer to dashboard package
-	// TODO: wsServer should produce chan messages
+	// TODO: wsServer should produce chan messages?
 	wsServer := server.New(monitor.Messages)
 	http.HandleFunc("/ws", wsServer.WsHandler)
 	go wsServer.Broadcaster()

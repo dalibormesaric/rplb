@@ -1,5 +1,28 @@
 # Reverse Proxy Load Balancer
 
+## What is this?
+
+With this project I wanted to have two things:
+
+1. A simple way to load balance traffic between my bare metal kubernetes cluster nodes
+1. A fun go project to work on
+
+## How to use it?
+
+```
+docker pull ghcr.io/dalibormesaric/rplb:latest
+
+docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=localhost,myapp -e BE=myapp,http://192.168.1.1:80 --memory="64m" --memory-reservation="64m" --cpus=".1" ghcr.io/dalibormesaric/rplb:latest
+```
+
+dashboard
+localhost:8000
+
+reverse proxy
+localhost:8080
+
+## Misc
+
 ### Tools used
 
 - https://coolors.co/palette/ef476f-ffd166-06d6a0
