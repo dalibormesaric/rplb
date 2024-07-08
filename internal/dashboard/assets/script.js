@@ -24,7 +24,7 @@ socket.addEventListener("message", (event) => {
 
             if (json.Type === "traffic-be") {
                 var cir = document.getElementsByName(json.Name + "cir")
-                if (cir) {
+                if (cir && cir.length === 1) {
                     var rectS = document.getElementsByName(json.FrontendName + "element")[0].getBoundingClientRect()
                     var fromLeft = rectS.right
                     var fromTop = rectS.top + (rectS.height / 2)
