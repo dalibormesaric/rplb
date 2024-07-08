@@ -10,7 +10,7 @@ import (
 	"github.com/dalibormesaric/rplb/internal/frontend"
 )
 
-//go:embed template/*.html
+//go:embed templates/*.html
 var content embed.FS
 
 //go:embed assets/*.css assets/*.js
@@ -37,7 +37,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 		a, _ := template.
 			New("index").
 			Funcs(getFuncMap()).
-			ParseFS(content, "template/index.html", "template/monitor.html")
+			ParseFS(content, "templates/index.html", "templates/monitor.html")
 		a.ExecuteTemplate(w, "monitor.html", MonitorModel{BaseModel: &BaseModel{SelectedMenu: "monitor"}, Backends: backends})
 	})
 
@@ -46,7 +46,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 		a, _ := template.
 			New("index").
 			Funcs(getFuncMap()).
-			ParseFS(content, "template/index.html", "template/traffic.html")
+			ParseFS(content, "templates/index.html", "templates/traffic.html")
 		a.ExecuteTemplate(w, "traffic.html", TrafficModel{BaseModel: &BaseModel{SelectedMenu: "traffic"}, Frontends: frontends, Backends: backends})
 	})
 
