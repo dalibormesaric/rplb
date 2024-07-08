@@ -8,6 +8,9 @@ socket.addEventListener("message", (event) => {
         if (json.Type === "monitor") {
             jn = document.getElementsByName(json.Name)
             if (jn && jn.length > 0) {
+                var latency = document.getElementsByName(json.Name + "latency")
+                latency[0].innerText = json.Latency !== "0s" ? json.Latency : "unavailable"
+
                 mg = jn[0].querySelector('.monitor-grid')
                 if (mg.children.length >= 20) {
                     mg.removeChild(mg.children[0])

@@ -11,20 +11,23 @@
             <div class="monitor-header">{{$key}}</div>
 
             <div class="monitor-group">
-                {{range $value}}
-                <div class="monitor" name="{{.Name}}">
-                    <div class="monitor-name">{{.Url}}</div>
-                    <div class="monitor-grid">
-                        {{range .Monitor}}
-                        {{if .Live}}
-                            <div class="latency-cell latency-{{.ColorCode}}" title="{{.Latency}}"></div>
-                        {{else}}
-                            <div class="latency-cell latency-0" title="unavailable"></div>
-                        {{end}}
-                        {{end}}
+                <div>
+                    {{range $value}}
+                    <div class="monitor" name="{{.Name}}">
+                        <div class="monitor-name">{{.Url}}</div>
+                        <div class="monitor-latency">Latency: <span name="{{.Name}}latency">unavailable</span></div>
+                        <div class="monitor-grid">
+                            {{range .Monitor}}
+                            {{if .Live}}
+                                <div class="latency-cell latency-{{.ColorCode}}" title="{{.Latency}}"></div>
+                            {{else}}
+                                <div class="latency-cell latency-0" title="unavailable"></div>
+                            {{end}}
+                            {{end}}
+                        </div>
                     </div>
+                    {{end}}
                 </div>
-                {{end}}
             </div>
 
         </div>
