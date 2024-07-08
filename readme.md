@@ -12,7 +12,7 @@ With this project I wanted to have two things:
 ```
 docker pull ghcr.io/dalibormesaric/rplb:latest
 
-docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=localhost,myapp -e BE=myapp,http://192.168.1.1:80 --memory="64m" --memory-reservation="64m" --cpus=".1" ghcr.io/dalibormesaric/rplb:latest
+docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=localhost,myapp -e BE=myapp,http://192.168.1.1:80 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
 ```
 
 dashboard

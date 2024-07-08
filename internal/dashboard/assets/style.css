@@ -325,7 +325,43 @@ main {
     background-color: #ffd166;
 }
 
+.latency-200 {
+    background-color: #fdc267;
+}
+
+.latency-300 {
+    background-color: #fcb568;
+}
+
+.latency-400 {
+    background-color: #fba969;
+}
+
+.latency-500 {
+    background-color: #f9996a;
+}
+
+.latency-600 {
+    background-color: #f78c6b;
+}
+
+.latency-700 {
+    background-color: #f6806c;
+}
+
+.latency-800 {
+    background-color: #f5756d;
+}
+
+.latency-900 {
+    background-color: #f3676e;
+}
+
 .latency-1000 {
+    background-color: #f1596e;
+}
+
+.latency-10000 {
     background-color: #ef476f;
 }
 

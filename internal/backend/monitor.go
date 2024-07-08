@@ -43,8 +43,10 @@ func (m *Monitor) Run() {
 						colorCode = 10
 					case d >= 10 && d < 110:
 						colorCode = (d / 10) * 10
-					case d >= 110:
-						colorCode = 1000
+					case d >= 110 && d < 1100:
+						colorCode = (d / 100) * 100
+					case d >= 1100:
+						colorCode = 10000
 					}
 					mf := MonitorFrame{Live: b.Live, Latency: latency, ColorCode: colorCode}
 					lmf := LiveMonitorFrame{Type: "monitor", Name: b.Name, Live: b.Live, Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
