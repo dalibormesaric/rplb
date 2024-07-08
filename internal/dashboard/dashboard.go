@@ -20,7 +20,12 @@ var (
 	since = time.Now()
 )
 
-func ListenAndServe(frontends frontend.Frontends, backends backend.Backends) {
+func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, messages chan interface{}) {
+	// TODO: wsServer should produce chan messages?
+	wsServer := NewWsServer(messages)
+	http.HandleFunc("/ws", wsServer.WsHandler)
+	go wsServer.Broadcaster()
+
 	http.Handle("/assets/", http.StripPrefix("/", http.FileServer(http.FS(assets))))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

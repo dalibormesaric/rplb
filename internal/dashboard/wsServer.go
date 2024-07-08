@@ -1,4 +1,4 @@
-package server
+package dashboard
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type WsServer struct {
 	Messages chan interface{}
 }
 
-func New(messages chan interface{}) *WsServer {
+func NewWsServer(messages chan interface{}) *WsServer {
 	return &WsServer{
 		entering: make(chan *websocket.Conn),
 		leaving:  make(chan *websocket.Conn),

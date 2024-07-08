@@ -3,13 +3,11 @@ package main
 import (
 	"flag"
 	"log"
-	"net/http"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/dashboard"
 	"github.com/dalibormesaric/rplb/internal/frontend"
 	"github.com/dalibormesaric/rplb/internal/reverseproxy"
-	"github.com/dalibormesaric/rplb/internal/server"
 )
 
 var (
@@ -35,12 +33,5 @@ func main() {
 
 	go reverseproxy.ListenAndServe(frontends, backends, monitor.Messages)
 
-	// dashboard
-	// move wsServer to dashboard package
-	// TODO: wsServer should produce chan messages?
-	wsServer := server.New(monitor.Messages)
-	http.HandleFunc("/ws", wsServer.WsHandler)
-	go wsServer.Broadcaster()
-
-	dashboard.ListenAndServe(frontends, backends)
+	dashboard.ListenAndServe(frontends, backends, monitor.Messages)
 }
