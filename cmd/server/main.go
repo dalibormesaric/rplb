@@ -28,10 +28,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Create backends: %s", err)
 	}
-	monitor := backends.NewMonitor()
-	go monitor.Run()
+	messages := backends.Monitor()
 
-	go reverseproxy.ListenAndServe(frontends, backends, monitor.Messages)
+	go reverseproxy.ListenAndServe(frontends, backends, messages)
 
-	dashboard.ListenAndServe(frontends, backends, monitor.Messages)
+	dashboard.ListenAndServe(frontends, backends, messages)
 }
