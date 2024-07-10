@@ -7,32 +7,36 @@
 
 {{range $fkey, $fvalue := $frontends}}
 <div class="traffic-container">
-    <div class="traffic-frontends">
-        <ul class="traffic-frontend">
-            <li name="{{$fkey}}element">
-                <div class="traffic-frontend-name">{{$fkey}}</div>
-                <div class="traffic-counter">Hits: <span name="{{$fkey}}hits">{{$fvalue.Hits}}</span></div>
-            </li>
-        </ul>
+    <div class="traffic-header">{{$fvalue.BackendName}}</div>
+
+    <div class="traffic-group">
+        <div class="traffic-frontends">
+            <ul class="traffic-frontend">
+                <li name="{{$fkey}}element">
+                    <div class="traffic-frontend-name">{{$fkey}}</div>
+                    <div class="traffic-counter">Hits: <span name="{{$fkey}}hits">{{$fvalue.Hits}}</span></div>
+                </li>
+            </ul>
+        </div>
+
+        {{range $bkey, $bvalue := $backends}}
+        {{if eq $bkey $fvalue.BackendName}}
+        <div class="traffic-backends">
+            <ul class="traffic-backend">
+
+                {{range $bvalue}}
+                <li>
+                    <span class="cir" name="{{.Name}}cir"></span>
+                    <div class="traffic-backend-name">{{.Url}}</div>
+                    <div class="traffic-counter">Hits: <span name="{{.Name}}hits">{{.Hits}}</span></div>
+                </li>
+                {{end}}
+
+            </ul>
+        </div>
+        {{end}}
+        {{end}}
     </div>
-
-    {{range $bkey, $bvalue := $backends}}
-    {{if eq $bkey $fvalue.BackendName}}
-    <div class="traffic-backends">
-        <ul class="traffic-backend">
-
-            {{range $bvalue}}
-            <li>
-                <span class="cir" name="{{.Name}}cir"></span>
-                <div class="traffic-backend-name">{{.Url}}</div>
-                <div class="traffic-counter">Hits: <span name="{{.Name}}hits">{{.Hits}}</span></div>
-            </li>
-            {{end}}
-
-        </ul>
-    </div>
-    {{end}}
-    {{end}}
 </div>
 {{end}}
 

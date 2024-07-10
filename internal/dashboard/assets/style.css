@@ -168,7 +168,6 @@ a.clean-link:focus {
     flex-direction: row;
 }
 
-/* Style for the logo */
 .logo-container a {
     padding: 30px 50px;
     display: block;
@@ -176,10 +175,7 @@ a.clean-link:focus {
     font-size: x-large;
 }
 
-/* Style for the left menu */
 .left-menu {
-    /* background-color: #333;
-    color: #fff; */
     text-transform: uppercase;
     letter-spacing: 0.3em;
     overflow-x: hidden;
@@ -211,7 +207,6 @@ a.clean-link:focus {
     color: #a3a3a3;
 }
 
-/* monitor */
 main {
     width: 100%;
     display: flex;
@@ -227,10 +222,11 @@ main {
     left: 250px;
 }
 
+/* M O N I T O R */
+
 .monitor-container {
     background-color: #fff;
     padding: 20px;
-    /* border-radius: 10px; */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 40vw;
     min-width: 400px;
@@ -240,7 +236,6 @@ main {
 .monitor-header {
     font-size: 1.5em;
     margin-bottom: 20px;
-    /* text-align: center; */
 }
 
 .monitor-group {
@@ -253,7 +248,6 @@ main {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
-    /* Add margin between monitors */
 }
 
 .monitor-name {
@@ -277,9 +271,7 @@ main {
 .latency-cell {
     width: 100%;
     padding-bottom: 100%;
-    /* Maintain square shape */
     background-color: #d3d3d3;
-    /* Default to light gray for unavailable */
     transition: background-color 0.5s;
 }
 
@@ -384,27 +376,29 @@ main {
     opacity: 0;
 }
 
-/* @keyframes fly-ball {
-    100% {
-        transform: translateX(300px) translateY(100px);
-    }
-} */
-
 .traffic-container {
-    display: flex;
-    flex-direction: row;
-
     background-color: #fff;
     padding: 20px;
     margin: 0 auto 30px auto;
     width: 40vw;
     min-width: 400px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.traffic-header {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.traffic-group {
+    display: flex;
+    flex-direction: row;
 }
 
 .traffic-container li {
     margin: 20px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease-in-out;
 }
 
