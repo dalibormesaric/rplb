@@ -1,0 +1,38 @@
+services:
+  be1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - backend=be1
+    ports:
+      - "8081:80"
+
+  be2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - backend=be2
+    ports:
+      - "8082:80"
+
+  be3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - backend=be3
+    ports:
+      - "8083:80"
+
+  rplb:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      - FE=localhost,sample
+      - BE=sample,http://be1,sample,http://be2,sample,http://be3
+    ports:
+      - "8080:8080"
+      - "8000:8000"
