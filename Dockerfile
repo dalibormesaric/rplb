@@ -12,4 +12,4 @@ RUN go build -v -o /usr/local/bin/app ./cmd/server
 EXPOSE 8000
 EXPOSE 8080
 
-CMD app -f ${FE} -b ${BE}
+CMD ["sh", "-c", "app -f ${FE} -b ${BE}"]
