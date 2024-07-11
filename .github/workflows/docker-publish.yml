@@ -39,7 +39,4 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            docker buildx build . --file Dockerfile --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false \
-              --label "org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/$IMAGE_NAME" \
-              --label "org.opencontainers.image.description=RPLB" \
-              --push
+            docker buildx build . --file Dockerfile --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false --push
