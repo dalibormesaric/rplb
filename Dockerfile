@@ -1,8 +1,5 @@
 FROM golang:1.22-alpine
 
-LABEL org.opencontainers.image.source=https://github.com/dalibormesaric/rplb
-LABEL org.opencontainers.image.description RPLB
-
 WORKDIR /usr/src/app
 
 # pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
