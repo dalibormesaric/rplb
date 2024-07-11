@@ -26,7 +26,8 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build image
-        run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm64
+        # Why --provenance=false? https://github.com/docker/buildx/issues/1964#issuecomment-1644634461
+        run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm64 --provenance=false
 
       - name: Log into GitHub Container Registry
         # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -45,5 +46,4 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
             docker push $IMAGE_ID:$VERSION
