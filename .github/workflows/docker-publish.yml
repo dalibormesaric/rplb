@@ -2,12 +2,10 @@ name: Docker
 
 on:
   push:
-    # Publish `main` as Docker `latest` image.
     branches:
       - master
 
 env:
-  # TODO: Change variable to your image's name.
   IMAGE_NAME: rplb
 
 jobs:
@@ -25,12 +23,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # - name: Build image
-        # Why --provenance=false? https://github.com/docker/buildx/issues/1964#issuecomment-1644634461
-        # run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm64 --provenance=false
-
       - name: Log into GitHub Container Registry
-        # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push image to GitHub Container Registry
@@ -46,4 +39,4 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            docker buildx build . --file Dockerfile --tag $IMAGE_ID:$VERSION --platform linux/arm64 --provenance=false --push
+            docker buildx build . --file Dockerfile --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false --push
