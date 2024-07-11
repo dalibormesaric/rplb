@@ -27,13 +27,13 @@ jobs:
 
       - name: Build image
         # Why --provenance=false? https://github.com/docker/buildx/issues/1964#issuecomment-1644634461
-        run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm64 --provenance=false
+        run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm64 --provenance=false --load
 
       - name: Log into GitHub Container Registry
         # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build image
+      - name: Push image to GitHub Container Registry
         run: |
             IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
             # Change all uppercase to lowercase
@@ -46,4 +46,5 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
+            docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
             docker push $IMAGE_ID:$VERSION
