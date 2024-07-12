@@ -18,7 +18,7 @@ func TestCreateBackends(t *testing.T) {
 		result, _ := CreateBackends(test.nameUrlPairs)
 		for i, v := range result[test.key] {
 			if v.Url != test.values[i].Url {
-				t.Errorf("wrong backend url: want (%s) got (%s)", test.values[i].Url, v.Url)
+				t.Errorf("wrong backend url: want (%s) got (%s)\n", test.values[i].Url, v.Url)
 			}
 		}
 	}
@@ -44,7 +44,7 @@ func TestCreateBackendsErrors(t *testing.T) {
 			t.Errorf("Want: %s\nGot: %s\n", test.err.Error(), err.Error())
 		}
 		if test.err == nil && err != nil {
-			t.Errorf("Was not expecting an error")
+			t.Errorf("Was not expecting an error\n")
 		}
 	}
 }

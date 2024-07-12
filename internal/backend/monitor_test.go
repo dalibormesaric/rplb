@@ -43,7 +43,7 @@ func TestGetColorCodes(t *testing.T) {
 		latency, _ := time.ParseDuration(test.latencyString)
 		colorCode := getColorCode(latency)
 		if colorCode != test.colorCode {
-			t.Errorf("wrong colorCode: want (%d) got (%d)", test.colorCode, colorCode)
+			t.Errorf("wrong colorCode: want (%d) got (%d)\n", test.colorCode, colorCode)
 		}
 	}
 }
