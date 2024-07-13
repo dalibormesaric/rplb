@@ -34,11 +34,11 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 		messages:  messages,
 	}
 	rpMux := http.NewServeMux()
-	rpMux.HandleFunc("/", rp.ServeHTTP)
+	rpMux.HandleFunc("/", rp.reverseProxyAndLoadBalance)
 	http.ListenAndServe(":8080", rpMux)
 }
 
-func (rp *reverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *http.Request) {
 	host, _, _ := net.SplitHostPort(r.Host)
 	f := rp.frontends.Get(host)
 	if f == nil {
@@ -46,22 +46,26 @@ func (rp *reverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.Inc()}
-	rp.messages <- tf
+
+	if rp.messages != nil {
+		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.Inc()}
+		rp.messages <- tf
+	}
 	// log.Println(f.BackendName)
 	liveBackends := backend.GetLive(rp.backends[f.BackendName])
 
 	n := len(liveBackends)
-	if n > 0 {
-		randBackend := rand.Intn(n)
-
-		// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
-		liveBackend := liveBackends[randBackend]
-		liveBackend.Proxy.ServeHTTP(w, r)
-		tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.Inc()}, FrontendName: host}
-		rp.messages <- tf
-	} else {
+	if n == 0 {
 		log.Printf("No live backends for host (%s)\n", host)
 		w.WriteHeader(http.StatusServiceUnavailable)
+		return
 	}
+
+	randBackend := rand.Intn(n)
+
+	// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
+	liveBackend := liveBackends[randBackend]
+	liveBackend.Proxy.ServeHTTP(w, r)
+	tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.Inc()}, FrontendName: host}
+	rp.messages <- tf
 }
