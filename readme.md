@@ -25,12 +25,12 @@ http://localhost:8080
 
 http://localhost:8000
 
-## Sample
+## Example
 
 ``` sh
-docker compose -f sample/compose.yaml up --build
+docker compose -f example/compose.yaml up --build
 
-docker compose -f sample/compose.yaml down
+docker compose -f example/compose.yaml down
 
 for i in {1..10}; do curl -s localhost:8080 | grep h1; sleep 1; done;
 
