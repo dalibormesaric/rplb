@@ -28,12 +28,13 @@ func TestCreateFrontendsErrors(t *testing.T) {
 		urlNamePair string
 		err         error
 	}{
-		{"", fmt.Errorf("frontends must be a comma-separated list containing even number of items")},
 		{"a", fmt.Errorf("frontends must be a comma-separated list containing even number of items")},
 		{"a,b,c", fmt.Errorf("frontends must be a comma-separated list containing even number of items")},
 		{",", fmt.Errorf("urlNamePair at index 0 must have a value")},
 		{"a,", fmt.Errorf("urlNamePair at index 1 must have a value")},
 		{"a,b,a,b", fmt.Errorf("frontend host has to be unique")},
+		{"", nil},
+		{" ", nil},
 		{"a,b", nil},
 	}
 

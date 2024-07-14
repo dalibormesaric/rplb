@@ -35,12 +35,17 @@ type LiveMonitorFrame struct {
 }
 
 func CreateBackends(nameUrlPairs string) (Backends, error) {
+	be := make(Backends)
+
+	if strings.TrimSpace(nameUrlPairs) == "" {
+		log.Println("No backends configured")
+		return be, nil
+	}
+
 	split := strings.Split(nameUrlPairs, ",")
 	if len(split)%2 != 0 {
 		return nil, fmt.Errorf("backends must be a comma-separated list containing even number of items")
 	}
-
-	backends := make(Backends)
 
 	for i, v := range split {
 		if v == "" {
@@ -49,27 +54,29 @@ func CreateBackends(nameUrlPairs string) (Backends, error) {
 
 		if (i+1)%2 == 0 {
 			k := split[i-1]
-			_, ok := backends[k]
+
 			backendUrl := split[i]
 			b, err := createBackend(k, backendUrl)
 			if err != nil {
 				return nil, err
 			}
+
+			_, ok := be[k]
 			if !ok {
-				backends[k] = []*Backend{b}
+				be[k] = []*Backend{b}
 			} else {
-				for _, existingBackend := range backends[k] {
+				for _, existingBackend := range be[k] {
 					if existingBackend.URL.Host == b.URL.Host {
 						return nil, fmt.Errorf("url (%s) already exist in backend (%s)", backendUrl, k)
 					}
 				}
-				backends[k] = append(backends[k], b)
+				be[k] = append(be[k], b)
 			}
 			log.Printf("Added backend url (%s) for (%s)\n", backendUrl, k)
 		}
 	}
 
-	return backends, nil
+	return be, nil
 }
 
 func createBackend(key, urlString string) (*Backend, error) {
@@ -84,12 +91,12 @@ func createBackend(key, urlString string) (*Backend, error) {
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
 
 	return &Backend{
-		string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
-		urlParsed,
-		proxy,
-		false,
-		[]MonitorFrame{},
-		0,
+		Name:    string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
+		URL:     urlParsed,
+		Proxy:   proxy,
+		Live:    false,
+		Monitor: []MonitorFrame{},
+		Hits:    0,
 	}, nil
 }
 

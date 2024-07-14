@@ -16,12 +16,18 @@ type Frontend struct {
 }
 
 func CreateFrontends(urlNamePair string) (Frontends, error) {
+	fe := make(Frontends)
+
+	if strings.TrimSpace(urlNamePair) == "" {
+		log.Println("No frontends configured")
+		return fe, nil
+	}
+
 	split := strings.Split(urlNamePair, ",")
 	if len(split)%2 != 0 {
 		return nil, fmt.Errorf("frontends must be a comma-separated list containing even number of items")
 	}
 
-	fe := make(Frontends)
 	for i, v := range split {
 		if v == "" {
 			return nil, fmt.Errorf("urlNamePair at index %d must have a value", i)

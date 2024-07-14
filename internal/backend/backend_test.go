@@ -31,22 +31,24 @@ func TestCreateBackendsErrors(t *testing.T) {
 		nameUrlPairs string
 		err          error
 	}{
-		{"", fmt.Errorf("backends must be a comma-separated list containing even number of items")},
 		{"a", fmt.Errorf("backends must be a comma-separated list containing even number of items")},
 		{"a,b,c", fmt.Errorf("backends must be a comma-separated list containing even number of items")},
 		{",", fmt.Errorf("nameUrlPair at index 0 must have a value")},
 		{"a,", fmt.Errorf("nameUrlPair at index 1 must have a value")},
 		{"a,b,a,b", fmt.Errorf("empty host for url (b) in backend (a)")},
 		{"a,http://b:1234,a,http://b:1234", fmt.Errorf("url (http://b:1234) already exist in backend (a)")},
+		{"", nil},
+		{" ", nil},
+		{"a,http://b:1234", nil},
 	}
 
 	for _, test := range tests {
 		_, err := CreateBackends(test.nameUrlPairs)
-		if err == nil {
-			t.Errorf("was expecting an error\n")
-		}
 		if test.err != nil && err.Error() != test.err.Error() {
 			t.Errorf("was expecting an error: want (%s)\ngot: (%s)\n", test.err.Error(), err.Error())
+		}
+		if test.err == nil && err != nil {
+			t.Errorf("Was not expecting an error\n")
 		}
 	}
 }
