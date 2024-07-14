@@ -3,7 +3,12 @@ package backend
 import (
 	"fmt"
 	"math"
+	"net"
 	"time"
+)
+
+const (
+	healthCheckTimeout = 2 * time.Second
 )
 
 func (b Backends) Monitor() chan interface{} {
@@ -20,12 +25,7 @@ func (b Backends) Monitor() chan interface{} {
 
 func (be *Backend) monitor(messages chan interface{}) {
 	for {
-		start := time.Now()
-		_, err := be.MonitorClient.Head(be.Url)
-		latency := time.Since(start)
-		if err != nil {
-			latency = 0
-		}
+		latency := healthCheck(be.Url)
 		be.Live = latency > 0
 
 		colorCode := getColorCode(latency)
@@ -39,8 +39,18 @@ func (be *Backend) monitor(messages chan interface{}) {
 	}
 }
 
-func getColorCode(latency time.Duration) int64 {
-	colorCode := int64(0)
+func healthCheck(host string) (latency time.Duration) {
+	start := time.Now()
+	conn, err := net.DialTimeout("tcp", host, healthCheckTimeout)
+	if err != nil {
+		return 0
+	}
+	latency = time.Since(start)
+	conn.Close()
+	return
+}
+
+func getColorCode(latency time.Duration) (colorCode int64) {
 	switch l := latency.Microseconds(); {
 	case l > 0 && l < 5_000:
 		colorCode = 5
@@ -53,7 +63,7 @@ func getColorCode(latency time.Duration) int64 {
 	case l >= 1_100_000:
 		colorCode = 10000
 	}
-	return colorCode
+	return
 }
 
 func last20(m []MonitorFrame) []MonitorFrame {

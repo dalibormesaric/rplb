@@ -1,15 +1,38 @@
 package backend
 
 import (
+	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 )
+
+func TestHealthCheckBackend(t *testing.T) {
+	backend := httptest.NewServer(nil)
+
+	url, err := url.Parse(backend.URL)
+	if err != nil {
+		t.Error(err)
+	}
+	latency := healthCheck(url.Host)
+	if latency == 0 {
+		t.Errorf("latency should be greated then 0, got (%v)", latency)
+	}
+}
+
+func TestHealthCheckNoBackend(t *testing.T) {
+	latency := healthCheck("notexists.local:1234")
+	if latency > 0 {
+		t.Errorf("latency should be 0, got (%v)", latency)
+	}
+}
 
 func TestGetColorCodes(t *testing.T) {
 	var tests = []struct {
 		latencyString string
 		colorCode     int64
 	}{
+		{"0µs", 0},
 		{"79.892µs", 5},
 		{"1.123ms", 5},
 		{"1.123ms", 5},
@@ -40,7 +63,10 @@ func TestGetColorCodes(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		latency, _ := time.ParseDuration(test.latencyString)
+		latency, err := time.ParseDuration(test.latencyString)
+		if err != nil {
+			t.Error(err)
+		}
 		colorCode := getColorCode(latency)
 		if colorCode != test.colorCode {
 			t.Errorf("wrong colorCode: want (%d) got (%d)\n", test.colorCode, colorCode)

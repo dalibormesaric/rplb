@@ -3,7 +3,6 @@ package backend
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
@@ -13,13 +12,12 @@ import (
 type Backends map[string][]*Backend
 
 type Backend struct {
-	Name          string
-	Url           string
-	Proxy         *httputil.ReverseProxy
-	Live          bool
-	MonitorClient http.Client
-	Monitor       []MonitorFrame
-	Hits          int64
+	Name    string
+	Url     string
+	Proxy   *httputil.ReverseProxy
+	Live    bool
+	Monitor []MonitorFrame
+	Hits    int64
 }
 
 type MonitorFrame struct {
@@ -35,10 +33,6 @@ type LiveMonitorFrame struct {
 	Latency   string
 	ColorCode int64
 }
-
-const (
-	monitorTimeout = 2 * time.Second
-)
 
 func CreateBackends(nameUrlPairs string) (Backends, error) {
 	split := strings.Split(nameUrlPairs, ",")
@@ -88,7 +82,6 @@ func createBackend(key, urlString string) (*Backend, error) {
 		urlString,
 		proxy,
 		false,
-		http.Client{Timeout: monitorTimeout},
 		[]MonitorFrame{},
 		0,
 	}, nil
