@@ -32,7 +32,9 @@ docker compose -f sample/compose.yaml up --build
 
 docker compose -f sample/compose.yaml down
 
-for i in {1..10}; do curl localhost:8080; sleep 1; done;
+for i in {1..10}; do curl -s localhost:8080 | grep h1; sleep 1; done;
+
+seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep h1"
 ```
 
 ## Misc

@@ -14,7 +14,7 @@
                 <div>
                     {{range $value}}
                     <div class="monitor" name="{{.Name}}">
-                        <div class="monitor-name">{{.Url}}</div>
+                        <div class="monitor-name">{{.URL.Host}}</div>
                         <div class="monitor-latency">Latency: <span name="{{.Name}}latency">unavailable</span></div>
                         <div class="monitor-grid">
                             {{range .Monitor}}

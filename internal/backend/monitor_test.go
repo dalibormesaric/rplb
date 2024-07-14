@@ -16,14 +16,14 @@ func TestHealthCheckBackend(t *testing.T) {
 	}
 	latency := healthCheck(url.Host)
 	if latency == 0 {
-		t.Errorf("latency should be greated then 0, got (%v)", latency)
+		t.Errorf("wrong latency: want (>0) got (%v)\n", latency)
 	}
 }
 
 func TestHealthCheckNoBackend(t *testing.T) {
 	latency := healthCheck("notexists.local:1234")
 	if latency > 0 {
-		t.Errorf("latency should be 0, got (%v)", latency)
+		t.Errorf("wrong latency: want (0) got (%v)\n", latency)
 	}
 }
 

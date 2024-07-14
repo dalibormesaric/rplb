@@ -9,17 +9,19 @@ func TestCreateBackends(t *testing.T) {
 	var tests = []struct {
 		nameUrlPairs string
 		key          string
-		values       []Backend
+		host         string
 	}{
-		{"a,b", "a", []Backend{{Url: "b"}}},
+		{"a,http://b:1234", "a", "b:1234"},
 	}
 
 	for _, test := range tests {
-		result, _ := CreateBackends(test.nameUrlPairs)
-		for i, v := range result[test.key] {
-			if v.Url != test.values[i].Url {
-				t.Errorf("wrong backend url: want (%s) got (%s)\n", test.values[i].Url, v.Url)
-			}
+		be, err := CreateBackends(test.nameUrlPairs)
+		if err != nil {
+			t.Error(err)
+		}
+		b := be[test.key][0]
+		if b.URL.Host != test.host {
+			t.Errorf("wrong backend url: want (%s) got (%s)\n", test.host, b.URL.Host)
 		}
 	}
 }
@@ -34,17 +36,17 @@ func TestCreateBackendsErrors(t *testing.T) {
 		{"a,b,c", fmt.Errorf("backends must be a comma-separated list containing even number of items")},
 		{",", fmt.Errorf("nameUrlPair at index 0 must have a value")},
 		{"a,", fmt.Errorf("nameUrlPair at index 1 must have a value")},
-		{"a,b,a,b", fmt.Errorf("url (b) already exist in backend (a)")},
-		{"a,b", nil},
+		{"a,b,a,b", fmt.Errorf("empty host for url (b) in backend (a)")},
+		{"a,http://b:1234,a,http://b:1234", fmt.Errorf("url (http://b:1234) already exist in backend (a)")},
 	}
 
 	for _, test := range tests {
 		_, err := CreateBackends(test.nameUrlPairs)
-		if test.err != nil && err.Error() != test.err.Error() {
-			t.Errorf("Want: %s\nGot: %s\n", test.err.Error(), err.Error())
+		if err == nil {
+			t.Errorf("was expecting an error\n")
 		}
-		if test.err == nil && err != nil {
-			t.Errorf("Was not expecting an error\n")
+		if test.err != nil && err.Error() != test.err.Error() {
+			t.Errorf("was expecting an error: want (%s)\ngot: (%s)\n", test.err.Error(), err.Error())
 		}
 	}
 }

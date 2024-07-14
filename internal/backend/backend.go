@@ -13,7 +13,7 @@ type Backends map[string][]*Backend
 
 type Backend struct {
 	Name    string
-	Url     string
+	URL     *url.URL
 	Proxy   *httputil.ReverseProxy
 	Live    bool
 	Monitor []MonitorFrame
@@ -51,12 +51,15 @@ func CreateBackends(nameUrlPairs string) (Backends, error) {
 			k := split[i-1]
 			_, ok := backends[k]
 			backendUrl := split[i]
-			b, _ := createBackend(k, backendUrl)
+			b, err := createBackend(k, backendUrl)
+			if err != nil {
+				return nil, err
+			}
 			if !ok {
 				backends[k] = []*Backend{b}
 			} else {
 				for _, existingBackend := range backends[k] {
-					if existingBackend.Url == backendUrl {
+					if existingBackend.URL.Host == b.URL.Host {
 						return nil, fmt.Errorf("url (%s) already exist in backend (%s)", backendUrl, k)
 					}
 				}
@@ -74,12 +77,15 @@ func createBackend(key, urlString string) (*Backend, error) {
 	if err != nil {
 		return nil, err
 	}
+	if urlParsed.Host == "" {
+		return nil, fmt.Errorf("empty host for url (%s) in backend (%s)", urlString, key)
+	}
 
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
 
 	return &Backend{
 		string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
-		urlString,
+		urlParsed,
 		proxy,
 		false,
 		[]MonitorFrame{},

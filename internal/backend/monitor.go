@@ -25,7 +25,7 @@ func (b Backends) Monitor() chan interface{} {
 
 func (be *Backend) monitor(messages chan interface{}) {
 	for {
-		latency := healthCheck(be.Url)
+		latency := healthCheck(be.URL.Host)
 		be.Live = latency > 0
 
 		colorCode := getColorCode(latency)
