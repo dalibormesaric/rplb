@@ -12,14 +12,15 @@ import (
 
 func TestReverseProxyWithNoFrontends(t *testing.T) {
 	rp := &reverseProxy{}
-	server := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
-	defer server.Close()
+	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
+	defer ts.Close()
 
-	resp, err := http.Get(server.URL)
+	res, err := ts.Client().Get(ts.URL)
 	if err != nil {
 		t.Error(err)
 	}
-	b, err := io.ReadAll(resp.Body)
+	b, err := io.ReadAll(res.Body)
+	res.Body.Close()
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,8 +29,8 @@ func TestReverseProxyWithNoFrontends(t *testing.T) {
 		t.Errorf("wrong content: want to contain (%s) got (%s)\n", content404, b)
 	}
 	expectedStatusCode := 200
-	if resp.StatusCode != expectedStatusCode {
-		t.Errorf("wrong status code: want (%d) got (%d)\n", expectedStatusCode, resp.StatusCode)
+	if res.StatusCode != expectedStatusCode {
+		t.Errorf("wrong status code: want (%d) got (%d)\n", expectedStatusCode, res.StatusCode)
 	}
 }
 
@@ -41,14 +42,15 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 	rp := &reverseProxy{
 		frontends: f,
 	}
-	server := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
-	defer server.Close()
+	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
+	defer ts.Close()
 
-	resp, err := http.Get(server.URL)
+	res, err := ts.Client().Get(ts.URL)
 	if err != nil {
 		t.Error(err)
 	}
-	b, err := io.ReadAll(resp.Body)
+	b, err := io.ReadAll(res.Body)
+	res.Body.Close()
 	if err != nil {
 		t.Error(err)
 	}
@@ -57,7 +59,7 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 		t.Errorf("wrong content: want to contain (%s) got (%s)\n", content503, b)
 	}
 	expectedStatusCode := 200
-	if resp.StatusCode != expectedStatusCode {
-		t.Errorf("wrong status code: want (%d) got (%d)\n", expectedStatusCode, resp.StatusCode)
+	if res.StatusCode != expectedStatusCode {
+		t.Errorf("wrong status code: want (%d) got (%d)\n", expectedStatusCode, res.StatusCode)
 	}
 }
