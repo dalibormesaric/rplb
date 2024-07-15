@@ -1,6 +1,7 @@
 package reverseproxy
 
 import (
+	"embed"
 	"log"
 	"math/rand"
 	"net"
@@ -38,12 +39,15 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 	http.ListenAndServe(":8080", rpMux)
 }
 
+//go:embed static/*.html
+var static embed.FS
+
 func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *http.Request) {
 	host, _, _ := net.SplitHostPort(r.Host)
 	f := rp.frontends.Get(host)
 	if f == nil {
 		log.Printf("Unknown frontend host (%s)\n", host)
-		w.WriteHeader(http.StatusNotFound)
+		http.ServeFileFS(w, r, static, "static/404.html")
 		return
 	}
 
@@ -57,7 +61,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	n := len(liveBackends)
 	if n == 0 {
 		log.Printf("No live backends for host (%s)\n", host)
-		w.WriteHeader(http.StatusServiceUnavailable)
+		http.ServeFileFS(w, r, static, "static/503.html")
 		return
 	}
 

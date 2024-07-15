@@ -46,11 +46,11 @@ seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep h1"
 
 ### TODO:
 
-- [ ] Fix container stop after homeassistant upgrade?
+- [ ] Retries
 
 ### Some ideas
 
-- https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
+- [ ] https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
 - [ ] https://stackoverflow.com/questions/70442770/infinite-scrolling-carousel-css-only
 - [ ] 503 Service Unavailable - when backends are unavailable
 - [ ] 404 Page Not Found - when no frontends

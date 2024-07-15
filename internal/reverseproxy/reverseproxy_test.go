@@ -1,8 +1,10 @@
 package reverseproxy
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/dalibormesaric/rplb/internal/frontend"
@@ -17,8 +19,17 @@ func TestReverseProxyWithNoFrontends(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if resp.StatusCode != 404 {
-		t.Errorf("wrong status code: want (404) got (%d)\n", resp.StatusCode)
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Error(err)
+	}
+	content404 := "<h1>404</h1>"
+	if !strings.Contains(string(b), content404) {
+		t.Errorf("wrong content: want to contain (%s) got (%s)\n", content404, b)
+	}
+	expectedStatusCode := 200
+	if resp.StatusCode != expectedStatusCode {
+		t.Errorf("wrong status code: want (%d) got (%d)\n", expectedStatusCode, resp.StatusCode)
 	}
 }
 
@@ -37,7 +48,16 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if resp.StatusCode != 503 {
-		t.Errorf("wrong status code: want (503) got (%d)\n", resp.StatusCode)
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Error(err)
+	}
+	content503 := "<h1>503</h1>"
+	if !strings.Contains(string(b), content503) {
+		t.Errorf("wrong content: want to contain (%s) got (%s)\n", content503, b)
+	}
+	expectedStatusCode := 200
+	if resp.StatusCode != expectedStatusCode {
+		t.Errorf("wrong status code: want (%d) got (%d)\n", expectedStatusCode, resp.StatusCode)
 	}
 }
