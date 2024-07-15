@@ -38,7 +38,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 			New("index").
 			Funcs(getFuncMap()).
 			ParseFS(content, "templates/index.html", "templates/monitor.html")
-		a.ExecuteTemplate(w, "monitor.html", MonitorModel{BaseModel: &BaseModel{SelectedMenu: "monitor"}, Backends: backends})
+		a.ExecuteTemplate(w, "monitor.html", MonitorModel{BaseModel: BaseModel{SelectedMenu: "monitor"}, Backends: backends})
 	})
 
 	http.HandleFunc("/traffic", func(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 			New("index").
 			Funcs(getFuncMap()).
 			ParseFS(content, "templates/index.html", "templates/traffic.html")
-		a.ExecuteTemplate(w, "traffic.html", TrafficModel{BaseModel: &BaseModel{SelectedMenu: "traffic"}, Frontends: frontends, Backends: backends})
+		a.ExecuteTemplate(w, "traffic.html", TrafficModel{BaseModel: BaseModel{SelectedMenu: "traffic"}, Frontends: frontends, Backends: backends})
 	})
 
 	http.ListenAndServe(":8000", nil)
