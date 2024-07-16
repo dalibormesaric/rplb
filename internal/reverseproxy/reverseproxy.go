@@ -20,7 +20,7 @@ type reverseProxy struct {
 type TrafficFrame struct {
 	Type string
 	Name string
-	Hits int64
+	Hits uint64
 }
 
 type TrafficBackendFrame struct {
@@ -52,7 +52,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	}
 
 	if rp.messages != nil {
-		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.Inc()}
+		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.IncHits()}
 		rp.messages <- tf
 	}
 	// log.Println(f.BackendName)
@@ -70,6 +70,6 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
 	liveBackend := liveBackends[randBackend]
 	liveBackend.Proxy.ServeHTTP(w, r)
-	tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.Inc()}, FrontendName: host}
+	tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 	rp.messages <- tf
 }

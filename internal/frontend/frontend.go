@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"sync/atomic"
 )
 
 type Host string
@@ -12,7 +13,7 @@ type Frontends map[Host]*Frontend
 
 type Frontend struct {
 	BackendName string
-	Hits        int64
+	hits        atomic.Uint64
 }
 
 func CreateFrontends(urlNamePair string) (Frontends, error) {
@@ -56,7 +57,10 @@ func (f Frontends) Get(host string) *Frontend {
 	return f[Host(host)]
 }
 
-func (f *Frontend) Inc() int64 {
-	f.Hits++
-	return f.Hits
+func (f *Frontend) GetHits() uint64 {
+	return f.hits.Load()
+}
+
+func (f *Frontend) IncHits() uint64 {
+	return f.hits.Add(1)
 }

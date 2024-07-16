@@ -20,7 +20,7 @@
                 <ul class="traffic-frontend">
                     <li name="{{$fkey}}element">
                         <div class="traffic-frontend-name">{{$fkey}}</div>
-                        <div class="traffic-counter">Hits: <span name="{{$fkey}}hits">{{$fvalue.Hits}}</span></div>
+                        <div class="traffic-counter">Hits: <span name="{{$fkey}}hits">{{$fvalue.GetHits}}</span></div>
                     </li>
                 </ul>
             </div>
@@ -34,7 +34,7 @@
                     <li>
                         <span class="cir" name="{{.Name}}cir"></span>
                         <div class="traffic-backend-name">{{.URL.String}}</div>
-                        <div class="traffic-counter">Hits: <span name="{{.Name}}hits">{{.Hits}}</span></div>
+                        <div class="traffic-counter">Hits: <span name="{{.Name}}hits">{{.GetHits}}</span></div>
                     </li>
                     {{end}}
 

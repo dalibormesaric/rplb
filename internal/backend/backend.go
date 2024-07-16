@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
@@ -17,7 +18,7 @@ type Backend struct {
 	Proxy   *httputil.ReverseProxy
 	Live    bool
 	Monitor []MonitorFrame
-	Hits    int64
+	Hits    atomic.Uint64
 }
 
 type MonitorFrame struct {
@@ -96,7 +97,7 @@ func createBackend(key, urlString string) (*Backend, error) {
 		Proxy:   proxy,
 		Live:    false,
 		Monitor: []MonitorFrame{},
-		Hits:    0,
+		Hits:    atomic.Uint64{},
 	}, nil
 }
 
@@ -123,7 +124,10 @@ func GetLive(backends []*Backend) (liveBackends []*Backend) {
 	return
 }
 
-func (b *Backend) Inc() int64 {
-	b.Hits++
-	return b.Hits
+func (b *Backend) GetHits() uint64 {
+	return b.Hits.Load()
+}
+
+func (b *Backend) IncHits() uint64 {
+	return b.Hits.Add(1)
 }
