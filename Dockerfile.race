@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine
+FROM golang:1.22
 
 WORKDIR /usr/src/app
 
@@ -7,7 +7,7 @@ COPY go.mod ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./cmd/rplb
+RUN go build -race -v -o /usr/local/bin/app ./cmd/rplb
 
 EXPOSE 8000
 EXPOSE 8080

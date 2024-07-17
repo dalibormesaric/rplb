@@ -1,0 +1,22 @@
+services:
+  be1:
+    extends:
+      file: compose.yaml
+      service: be1
+  
+  be2:
+    extends:
+      file: compose.yaml
+      service: be2
+  
+  be3:
+    extends:
+      file: compose.yaml
+      service: be3
+
+  rplb:
+    extends:
+      file: compose.yaml
+      service: rplb
+    build:
+      dockerfile: Dockerfile.race

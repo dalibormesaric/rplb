@@ -30,6 +30,10 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
+    depends_on:
+      - be1
+      - be2
+      - be3
     environment:
       - FE=localhost,example
       - BE=example,http://host.docker.internal:8081,example,http://host.docker.internal:8082,example,http://host.docker.internal:8083
