@@ -56,7 +56,7 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 func getFuncMap() template.FuncMap {
 	return template.FuncMap{
 		"printSince": func() string {
-			return since.Format("2006-01-02 15:04:05")
+			return since.Format("2006-01-02 15:04:05 MST")
 		},
 		"menuSelected": func(selectedMenu, menuItem string) string {
 			if selectedMenu == menuItem {
