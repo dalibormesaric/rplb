@@ -73,3 +73,25 @@ func TestGetColorCodes(t *testing.T) {
 		}
 	}
 }
+
+func TestLast20(t *testing.T) {
+	var tests = []struct {
+		monitorFrames []MonitorFrame
+		expectedLen   int
+	}{
+		{nil, 0},
+		{[]MonitorFrame{}, 0},
+		{[]MonitorFrame{{}}, 1},
+		{[]MonitorFrame{{}, {}}, 2},
+		{[]MonitorFrame{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}}, 19},
+		{[]MonitorFrame{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}}, 20},
+		{[]MonitorFrame{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}}, 20},
+	}
+
+	for _, test := range tests {
+		last20 := last20(test.monitorFrames)
+		if len(last20) != test.expectedLen {
+			t.Errorf("wrong monitor frames length: want (%d) got (%d)\n", test.expectedLen, len(last20))
+		}
+	}
+}
