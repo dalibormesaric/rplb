@@ -94,7 +94,7 @@ func createBackend(key, urlString string) (*Backend, error) {
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
 
 	return &Backend{
-		Name:          string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
+		Name:          stripString(fmt.Sprintf("%s%s", key, urlString)),
 		URL:           urlParsed,
 		Proxy:         proxy,
 		live:          false,
@@ -103,18 +103,22 @@ func createBackend(key, urlString string) (*Backend, error) {
 	}, nil
 }
 
-func strip(s []byte) []byte {
+func stripString(s string) string {
+	return string(strip([]byte(s)))
+}
+
+func strip(bytes []byte) []byte {
 	n := 0
-	for _, b := range s {
+	for _, b := range bytes {
 		if ('a' <= b && b <= 'z') ||
 			('A' <= b && b <= 'Z') ||
 			('0' <= b && b <= '9') ||
 			b == ' ' {
-			s[n] = b
+			bytes[n] = b
 			n++
 		}
 	}
-	return s[:n]
+	return bytes[:n]
 }
 
 func GetLive(backends []*Backend) (liveBackends []*Backend) {
