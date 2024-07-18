@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -13,12 +14,13 @@ import (
 type Backends map[string][]*Backend
 
 type Backend struct {
-	Name    string
-	URL     *url.URL
-	Proxy   *httputil.ReverseProxy
-	Live    bool
-	Monitor []MonitorFrame
-	Hits    atomic.Uint64
+	mu            sync.RWMutex
+	Name          string
+	URL           *url.URL
+	Proxy         *httputil.ReverseProxy
+	live          bool
+	monitorFrames []MonitorFrame
+	Hits          atomic.Uint64
 }
 
 type MonitorFrame struct {
@@ -92,12 +94,12 @@ func createBackend(key, urlString string) (*Backend, error) {
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
 
 	return &Backend{
-		Name:    string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
-		URL:     urlParsed,
-		Proxy:   proxy,
-		Live:    false,
-		Monitor: []MonitorFrame{},
-		Hits:    atomic.Uint64{},
+		Name:          string(strip([]byte(fmt.Sprintf("%s%s", key, urlString)))),
+		URL:           urlParsed,
+		Proxy:         proxy,
+		live:          false,
+		monitorFrames: []MonitorFrame{},
+		Hits:          atomic.Uint64{},
 	}, nil
 }
 
@@ -117,7 +119,7 @@ func strip(s []byte) []byte {
 
 func GetLive(backends []*Backend) (liveBackends []*Backend) {
 	for _, b := range backends {
-		if b.Live {
+		if b.GetLive() {
 			liveBackends = append(liveBackends, b)
 		}
 	}
@@ -130,4 +132,28 @@ func (b *Backend) GetHits() uint64 {
 
 func (b *Backend) IncHits() uint64 {
 	return b.Hits.Add(1)
+}
+
+func (b *Backend) SetLive(live bool) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.live = live
+}
+
+func (b *Backend) GetLive() bool {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.live
+}
+
+func (b *Backend) SetMonitorFrames(monitorFrames []MonitorFrame) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.monitorFrames = monitorFrames
+}
+
+func (b *Backend) GetMonitorFrames() []MonitorFrame {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.monitorFrames
 }

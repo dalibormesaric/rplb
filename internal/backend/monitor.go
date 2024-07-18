@@ -26,14 +26,14 @@ func (b Backends) Monitor() chan interface{} {
 func (be *Backend) monitor(messages chan interface{}) {
 	for {
 		latency := healthCheck(be.URL.Host)
-		be.Live = latency > 0
+		be.SetLive(latency > 0)
 
 		colorCode := getColorCode(latency)
 
-		mf := MonitorFrame{Live: be.Live, Latency: latency, ColorCode: colorCode}
-		lmf := LiveMonitorFrame{Type: "monitor", Name: be.Name, Live: be.Live, Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
+		mf := MonitorFrame{Live: be.GetLive(), Latency: latency, ColorCode: colorCode}
+		lmf := LiveMonitorFrame{Type: "monitor", Name: be.Name, Live: be.GetLive(), Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
 		messages <- lmf
-		be.Monitor = last20(append(be.Monitor, mf))
+		be.SetMonitorFrames(last20(append(be.GetMonitorFrames(), mf)))
 
 		time.Sleep(1 * time.Second)
 	}

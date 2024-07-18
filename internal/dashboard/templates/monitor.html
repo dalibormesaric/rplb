@@ -17,7 +17,7 @@
                         <div class="monitor-name">{{.URL.Host}}</div>
                         <div class="monitor-latency">Latency: <span name="{{.Name}}latency">unavailable</span></div>
                         <div class="monitor-grid">
-                            {{range .Monitor}}
+                            {{range .GetMonitorFrames}}
                             {{if .Live}}
                                 <div class="latency-cell latency-{{.ColorCode}}" title="{{.Latency}}"></div>
                             {{else}}

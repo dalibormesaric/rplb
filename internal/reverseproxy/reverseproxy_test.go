@@ -79,7 +79,7 @@ func TestReverseProxyWithFrontendsAndWithBackends(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	b["b"][0].Live = true
+	b["b"][0].SetLive(true)
 	rp := &reverseProxy{
 		frontends: f,
 		backends:  b,
