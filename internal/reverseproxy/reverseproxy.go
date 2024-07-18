@@ -65,11 +65,13 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// TODO: implement load balancing strategies
 	randBackend := rand.Intn(n)
 
 	// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
 	liveBackend := liveBackends[randBackend]
 	liveBackend.Proxy.ServeHTTP(w, r)
+
 	if rp.messages != nil {
 		tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 		rp.messages <- tf
