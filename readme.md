@@ -55,6 +55,7 @@ docker compose -f example/compose.race.yaml down
 ### TODO:
 
 - [ ] Retries
+- [ ] Load Balancing Strategies
 
 ### Some ideas
 
