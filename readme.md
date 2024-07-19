@@ -25,6 +25,12 @@ http://localhost:8080
 
 http://localhost:8000
 
+![monitor](/docs/monitor.png)
+
+![traffic](/docs/traffic.png)
+
+![traffic gif](/docs/traffic.gif)
+
 ## Example
 
 ``` sh
