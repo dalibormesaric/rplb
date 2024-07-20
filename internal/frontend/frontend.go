@@ -16,6 +16,7 @@ type Frontend struct {
 	hits        atomic.Uint64
 }
 
+// CreateFrontends parses url name pairs and returns created Frontends.
 func CreateFrontends(urlNamePair string) (Frontends, error) {
 	fe := make(Frontends)
 
@@ -53,14 +54,19 @@ func CreateFrontends(urlNamePair string) (Frontends, error) {
 	return fe, nil
 }
 
+// Get returns Frontend for a host.
 func (f Frontends) Get(host string) *Frontend {
 	return f[Host(host)]
 }
 
+// GetHits returns number of hits for Frontend.
+// Concurrency-safe.
 func (f *Frontend) GetHits() uint64 {
 	return f.hits.Load()
 }
 
+// IncHits increases and returns number of hits for Frontend.
+// Concurrency-safe.
 func (f *Frontend) IncHits() uint64 {
 	return f.hits.Add(1)
 }
