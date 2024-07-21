@@ -37,6 +37,7 @@ type LiveMonitorFrame struct {
 	ColorCode int64
 }
 
+// CreateBackends parses name url pairs and returns created Backends.
 func CreateBackends(nameUrlPairs string) (Backends, error) {
 	be := make(Backends)
 
@@ -130,20 +131,28 @@ func GetLive(backends []*Backend) (liveBackends []*Backend) {
 	return
 }
 
+// GetHits returns number of hits for Backend.
+// Concurrency-safe.
 func (b *Backend) GetHits() uint64 {
 	return b.Hits.Load()
 }
 
+// IncHits increases and returns number of hits for Backend.
+// Concurrency-safe.
 func (b *Backend) IncHits() uint64 {
 	return b.Hits.Add(1)
 }
 
+// SetLive sets if Backend is live.
+// Concurrency-safe.
 func (b *Backend) SetLive(live bool) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.live = live
 }
 
+// GetLive returns if Backend is live.
+// Concurrency-safe.
 func (b *Backend) GetLive() bool {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
