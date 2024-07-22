@@ -48,7 +48,29 @@ func TestCreateBackendsErrors(t *testing.T) {
 			t.Errorf("was expecting an error: want (%s)\ngot: (%s)\n", test.err.Error(), err.Error())
 		}
 		if test.err == nil && err != nil {
-			t.Errorf("Was not expecting an error\n")
+			t.Errorf("was not expecting an error\n")
+		}
+	}
+}
+
+func TestStripString(t *testing.T) {
+	var tests = []struct {
+		input          string
+		expectedOutput string
+	}{
+		{"", ""},
+		{" ", ""},
+		{"%-_=#\"", ""},
+		{"abc", "abc"},
+		{"ABC", "ABC"},
+		{"123", "123"},
+		{"a,http://b:1234", "ahttpb1234"},
+	}
+
+	for _, test := range tests {
+		output := stripString(test.input)
+		if output != test.expectedOutput {
+			t.Errorf("wrong stripString output: want (%s) got (%s)\n", test.expectedOutput, output)
 		}
 	}
 }

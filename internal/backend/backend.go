@@ -104,17 +104,18 @@ func createBackend(key, urlString string) (*Backend, error) {
 	}, nil
 }
 
+// stripString is a string wrapper around strip.
 func stripString(s string) string {
 	return string(strip([]byte(s)))
 }
 
+// strip returns bytes a-z, A-Z and 0-9 and ignores the rest.
 func strip(bytes []byte) []byte {
 	n := 0
 	for _, b := range bytes {
 		if ('a' <= b && b <= 'z') ||
 			('A' <= b && b <= 'Z') ||
-			('0' <= b && b <= '9') ||
-			b == ' ' {
+			('0' <= b && b <= '9') {
 			bytes[n] = b
 			n++
 		}
