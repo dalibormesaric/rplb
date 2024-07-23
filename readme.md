@@ -60,8 +60,12 @@ docker compose -f example/compose.race.yaml down
 
 ### TODO:
 
+- [ ] Version in dashboard
 - [ ] Retries
-- [ ] Load Balancing Strategies
+- [ ] Load Balancing Algorithms
+    - [x] random
+    - [ ] round robin
+    - [ ] sticky round robin
 
 ### Some ideas
 

@@ -55,25 +55,32 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.IncHits()}
 		rp.messages <- tf
 	}
-	// log.Println(f.BackendName)
-	liveBackends := backend.GetLive(rp.backends[f.BackendName])
 
-	n := len(liveBackends)
-	if n == 0 {
+	liveBackend := rp.random(f.BackendName)
+	if liveBackend == nil {
 		log.Printf("No live backends for host (%s)\n", host)
 		http.ServeFileFS(w, r, static, "static/503.html")
 		return
 	}
-
-	// TODO: implement load balancing strategies
-	randBackend := rand.Intn(n)
-
 	// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
-	liveBackend := liveBackends[randBackend]
 	liveBackend.Proxy.ServeHTTP(w, r)
 
 	if rp.messages != nil {
 		tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 		rp.messages <- tf
 	}
+}
+
+func (rp *reverseProxy) random(backendName string) *backend.Backend {
+	// log.Println(backendName)
+	liveBackends := backend.GetLive(rp.backends[backendName])
+
+	n := len(liveBackends)
+	if n == 0 {
+		return nil
+	}
+
+	randBackend := rand.Intn(n)
+	liveBackend := liveBackends[randBackend]
+	return liveBackend
 }
