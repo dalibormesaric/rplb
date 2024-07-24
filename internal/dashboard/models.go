@@ -7,6 +7,7 @@ import (
 
 type BaseModel struct {
 	SelectedMenu string
+	Version      string
 }
 
 type MonitorModel struct {

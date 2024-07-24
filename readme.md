@@ -1,4 +1,4 @@
-# Reverse Proxy Load Balancer
+# RPLB – Reverse Proxy Load Balancer
 
 ## What is this?
 
@@ -10,6 +10,10 @@ With this project I wanted to have two things:
 ## How to use it?
 
 ### Docker
+
+``` sh
+docker build --build-arg="VERSION=$(git describe --tags --abbrev=0)" -t rplb .
+```
 
 ``` sh
 docker pull ghcr.io/dalibormesaric/rplb:latest
@@ -60,7 +64,7 @@ docker compose -f example/compose.race.yaml down
 
 ### TODO:
 
-- [ ] Version in dashboard
+- [x] Version in dashboard
 - [ ] Retries
 - [ ] Load Balancing Algorithms
     - [x] random

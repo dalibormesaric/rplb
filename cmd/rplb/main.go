@@ -13,6 +13,7 @@ import (
 var (
 	fe = flag.String("f", "", "frontends")
 	be = flag.String("b", "", "backends")
+	v  = flag.String("v", "", "version")
 )
 
 func main() {
@@ -32,5 +33,5 @@ func main() {
 
 	go reverseproxy.ListenAndServe(frontends, backends, messages)
 
-	dashboard.ListenAndServe(frontends, backends, messages)
+	dashboard.ListenAndServe(frontends, backends, messages, *v)
 }

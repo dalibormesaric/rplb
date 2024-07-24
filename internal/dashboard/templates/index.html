@@ -19,7 +19,14 @@
                 </ul>
             </div>
             <div class="footer">
-                started {{ printSince }}
+                <div>
+                    started {{ printSince }}
+                </div>
+                {{if .Version}}
+                <div>
+                    version {{ .Version }}
+                </div>
+                {{end}}
             </div>
         </nav>
 

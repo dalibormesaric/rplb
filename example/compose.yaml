@@ -30,6 +30,8 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
+      args:
+        - VERSION=
     depends_on:
       - be1
       - be2
