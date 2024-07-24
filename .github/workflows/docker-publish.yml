@@ -2,8 +2,8 @@ name: Docker
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*.*'
 
 env:
   IMAGE_NAME: rplb
@@ -15,10 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Latest Tag
+      - name: Output Tag
         id: tag
         run: |
-          echo "latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)"
+          echo "output_tag=${GITHUB_REF#refs/*/}"
 
       - # Add support for more platforms with QEMU (optional)
         # https://github.com/docker/setup-qemu-action
@@ -44,5 +44,5 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            echo APP_VERSION=${{ steps.tag.outputs.latest_tag }}
+            echo APP_VERSION=${{ steps.tag.outputs.output_tag }}
             docker buildx build . --file Dockerfile --build-arg="VERSION=$APP_VERSION" --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false --push
