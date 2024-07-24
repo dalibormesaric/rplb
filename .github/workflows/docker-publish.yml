@@ -39,4 +39,5 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            docker buildx build . --file Dockerfile --build-arg="VERSION=$(git describe --tags --abbrev=0)" --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false --push
+            echo APP_VERSION=$(git describe --tags --abbrev=0)
+            docker buildx build . --file Dockerfile --build-arg="VERSION=$APP_VERSION" --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false --push

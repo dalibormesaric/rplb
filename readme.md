@@ -65,6 +65,7 @@ docker compose -f example/compose.race.yaml down
 ### TODO:
 
 - [x] Version in dashboard
+- [ ] Version docker images
 - [ ] Retries
 - [ ] Load Balancing Algorithms
     - [x] random
