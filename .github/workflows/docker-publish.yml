@@ -15,11 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Output Tag
-        id: tag
-        run: |
-          echo "output_tag=${GITHUB_REF#refs/*/}"
-
       - # Add support for more platforms with QEMU (optional)
         # https://github.com/docker/setup-qemu-action
         name: Set up QEMU
@@ -44,5 +39,4 @@ jobs:
             [ "$VERSION" == "master" ] && VERSION=latest
             echo IMAGE_ID=$IMAGE_ID
             echo VERSION=$VERSION
-            echo APP_VERSION=${{ steps.tag.outputs.output_tag }}
-            docker buildx build . --file Dockerfile --build-arg="VERSION=$APP_VERSION" --tag $IMAGE_ID:$VERSION --platform linux/amd64,linux/arm64 --provenance=false --push
+            docker buildx build . --file Dockerfile --build-arg="VERSION=$VERSION" --tag $IMAGE_ID:$VERSION --tag $IMAGE_ID:latest --platform linux/amd64,linux/arm64 --provenance=false --push
