@@ -18,11 +18,11 @@ type Frontend struct {
 
 // CreateFrontends parses url name pairs and returns created Frontends.
 func CreateFrontends(urlNamePair string) (Frontends, error) {
-	fe := make(Frontends)
+	frontends := make(Frontends)
 
 	if strings.TrimSpace(urlNamePair) == "" {
 		log.Println("No frontends configured")
-		return fe, nil
+		return frontends, nil
 	}
 
 	split := strings.Split(urlNamePair, ",")
@@ -38,20 +38,20 @@ func CreateFrontends(urlNamePair string) (Frontends, error) {
 		if (i+1)%2 == 0 {
 			host := Host(split[i-1])
 
-			_, ok := fe[host]
+			_, ok := frontends[host]
 			if ok {
 				return nil, fmt.Errorf("frontend host has to be unique")
 			}
 
 			backendName := split[i]
-			fe[host] = &Frontend{
+			frontends[host] = &Frontend{
 				BackendName: backendName,
 			}
 			log.Printf("Added frontend host (%s) for (%s)\n", host, backendName)
 		}
 	}
 
-	return fe, nil
+	return frontends, nil
 }
 
 // Get returns Frontend for a host.

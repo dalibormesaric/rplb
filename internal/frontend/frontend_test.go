@@ -9,9 +9,9 @@ func TestCreateFrontends(t *testing.T) {
 	var tests = []struct {
 		urlNamePair string
 		key         string
-		values      Frontend
+		values      *Frontend
 	}{
-		{"a,b", "a", Frontend{BackendName: "b"}},
+		{"a,b", "a", &Frontend{BackendName: "b"}},
 	}
 
 	for _, test := range tests {
