@@ -39,11 +39,11 @@ type LiveMonitorFrame struct {
 
 // CreateBackends parses name url pairs and returns created Backends.
 func CreateBackends(nameUrlPairs string) (Backends, error) {
-	be := make(Backends)
+	backends := make(Backends)
 
 	if strings.TrimSpace(nameUrlPairs) == "" {
 		log.Println("No backends configured")
-		return be, nil
+		return backends, nil
 	}
 
 	split := strings.Split(nameUrlPairs, ",")
@@ -65,22 +65,22 @@ func CreateBackends(nameUrlPairs string) (Backends, error) {
 				return nil, err
 			}
 
-			_, ok := be[k]
+			_, ok := backends[k]
 			if !ok {
-				be[k] = []*Backend{b}
+				backends[k] = []*Backend{b}
 			} else {
-				for _, existingBackend := range be[k] {
+				for _, existingBackend := range backends[k] {
 					if existingBackend.URL.Host == b.URL.Host {
 						return nil, fmt.Errorf("url (%s) already exist in backend (%s)", backendUrl, k)
 					}
 				}
-				be[k] = append(be[k], b)
+				backends[k] = append(backends[k], b)
 			}
 			log.Printf("Added backend url (%s) for (%s)\n", backendUrl, k)
 		}
 	}
 
-	return be, nil
+	return backends, nil
 }
 
 func createBackend(key, urlString string) (*Backend, error) {
@@ -160,12 +160,16 @@ func (b *Backend) GetLive() bool {
 	return b.live
 }
 
+// SetMonitorFrames sets monitor frames.
+// Concurrency-safe.
 func (b *Backend) SetMonitorFrames(monitorFrames []MonitorFrame) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.monitorFrames = monitorFrames
 }
 
+// GetMonitorFrames returns monitor frames.
+// Concurrency-safe.
 func (b *Backend) GetMonitorFrames() []MonitorFrame {
 	b.mu.RLock()
 	defer b.mu.RUnlock()

@@ -12,10 +12,10 @@ const (
 	healthCheckTimeout = 2 * time.Second
 )
 
-func (b Backends) Monitor() chan interface{} {
+func (backends Backends) Monitor() chan interface{} {
 	messages := make(chan interface{})
 
-	for _, v := range b {
+	for _, v := range backends {
 		for _, backend := range v {
 			go backend.monitor(messages)
 		}
@@ -24,17 +24,17 @@ func (b Backends) Monitor() chan interface{} {
 	return messages
 }
 
-func (be *Backend) monitor(messages chan interface{}) {
+func (b *Backend) monitor(messages chan interface{}) {
 	for {
-		latency := healthCheck(be.URL.Host)
-		be.SetLive(latency > 0)
+		latency := healthCheck(b.URL.Host)
+		b.SetLive(latency > 0)
 
 		colorCode := getColorCode(latency)
 
-		mf := MonitorFrame{Live: be.GetLive(), Latency: latency, ColorCode: colorCode}
-		be.SetMonitorFrames(last20(append(be.GetMonitorFrames(), mf)))
+		mf := MonitorFrame{Live: b.GetLive(), Latency: latency, ColorCode: colorCode}
+		b.SetMonitorFrames(last20(append(b.GetMonitorFrames(), mf)))
 
-		lmf := LiveMonitorFrame{Type: "monitor", Name: be.Name, Live: be.GetLive(), Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
+		lmf := LiveMonitorFrame{Type: "monitor", Name: b.Name, Live: b.GetLive(), Latency: fmt.Sprintf("%v", latency), ColorCode: colorCode}
 		messages <- lmf
 
 		time.Sleep(monitorInterval)

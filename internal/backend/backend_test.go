@@ -15,11 +15,11 @@ func TestCreateBackends(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		be, err := CreateBackends(test.nameUrlPairs)
+		backends, err := CreateBackends(test.nameUrlPairs)
 		if err != nil {
 			t.Error(err)
 		}
-		b := be[test.key][0]
+		b := backends[test.key][0]
 		if b.URL.Host != test.host {
 			t.Errorf("wrong backend url: want (%s) got (%s)\n", test.host, b.URL.Host)
 		}
