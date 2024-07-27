@@ -65,7 +65,8 @@ docker compose -f example/compose.race.yaml down
 ### TODO:
 
 - [x] Version in dashboard
-- [ ] Version docker images
+- [x] Version docker images
+- [ ] Use ldflags for version
 - [ ] Retries
 - [ ] Load Balancing Algorithms
     - [x] random
