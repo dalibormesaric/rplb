@@ -9,6 +9,12 @@ With this project I wanted to have two things:
 
 ## How to use it?
 
+### Locally
+
+``` sh
+go run -ldflags "-X github.com/dalibormesaric/rplb/internal/config.Version=$(git describe --tags --abbrev=0)" cmd/rplb/main.go
+```
+
 ### Docker
 
 ``` sh

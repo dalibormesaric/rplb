@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
+	"github.com/dalibormesaric/rplb/internal/config"
 	"github.com/dalibormesaric/rplb/internal/dashboard"
 	"github.com/dalibormesaric/rplb/internal/frontend"
 	"github.com/dalibormesaric/rplb/internal/reverseproxy"
@@ -13,11 +14,9 @@ import (
 var (
 	fe = flag.String("f", "", "frontends")
 	be = flag.String("b", "", "backends")
-	v  = flag.String("v", "", "version")
 )
 
 func main() {
-	log.Println("Starting RPLB...")
 	flag.Parse()
 
 	frontends, err := frontend.CreateFrontends(*fe)
@@ -33,5 +32,5 @@ func main() {
 
 	go reverseproxy.ListenAndServe(frontends, backends, messages)
 
-	dashboard.ListenAndServe(frontends, backends, messages, *v)
+	dashboard.ListenAndServe(frontends, backends, messages, config.Version)
 }
