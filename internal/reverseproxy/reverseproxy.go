@@ -56,7 +56,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		rp.messages <- tf
 	}
 
-	liveBackend := rp.random(f.BackendName)
+	liveBackend := rp.roundRobin(f.BackendName)
 	if liveBackend == nil {
 		log.Printf("No live backends for host (%s)\n", host)
 		http.ServeFileFS(w, r, static, "static/503.html")
@@ -71,8 +71,25 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	}
 }
 
+var roundRobinLast = 0
+
+func (rp *reverseProxy) roundRobin(backendName string) *backend.Backend {
+	liveBackends := backend.GetLive(rp.backends[backendName])
+
+	n := len(liveBackends)
+	if n == 0 {
+		return nil
+	}
+
+	if roundRobinLast >= n {
+		roundRobinLast = 0
+	}
+	liveBackend := liveBackends[roundRobinLast]
+	roundRobinLast++
+	return liveBackend
+}
+
 func (rp *reverseProxy) random(backendName string) *backend.Backend {
-	// log.Println(backendName)
 	liveBackends := backend.GetLive(rp.backends[backendName])
 
 	n := len(liveBackends)
