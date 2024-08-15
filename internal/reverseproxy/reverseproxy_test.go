@@ -42,7 +42,8 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 		t.Error(err)
 	}
 	rp := &reverseProxy{
-		frontends: f,
+		frontends:       f,
+		roundRobinState: &roundRobinState{},
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()
@@ -81,8 +82,9 @@ func TestReverseProxyWithFrontendsAndWithBackends(t *testing.T) {
 	}
 	b["b"][0].SetLive(true)
 	rp := &reverseProxy{
-		frontends: f,
-		backends:  b,
+		frontends:       f,
+		backends:        b,
+		roundRobinState: &roundRobinState{},
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()

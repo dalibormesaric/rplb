@@ -6,15 +6,17 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"sync"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
 )
 
 type reverseProxy struct {
-	frontends frontend.Frontends
-	backends  backend.Backends
-	messages  chan interface{}
+	frontends       frontend.Frontends
+	backends        backend.Backends
+	messages        chan interface{}
+	roundRobinState *roundRobinState
 }
 
 type TrafficFrame struct {
@@ -30,9 +32,10 @@ type TrafficBackendFrame struct {
 
 func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, messages chan interface{}) {
 	rp := &reverseProxy{
-		frontends: frontends,
-		backends:  backends,
-		messages:  messages,
+		frontends:       frontends,
+		backends:        backends,
+		messages:        messages,
+		roundRobinState: &roundRobinState{},
 	}
 	rpMux := http.NewServeMux()
 	rpMux.HandleFunc("/", rp.reverseProxyAndLoadBalance)
@@ -71,9 +74,14 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	}
 }
 
-var roundRobinLast = 0
+type roundRobinState struct {
+	mu sync.Mutex
+	n  int
+}
 
 func (rp *reverseProxy) roundRobin(backendName string) *backend.Backend {
+	rp.roundRobinState.mu.Lock()
+	defer rp.roundRobinState.mu.Unlock()
 	liveBackends := backend.GetLive(rp.backends[backendName])
 
 	n := len(liveBackends)
@@ -81,11 +89,11 @@ func (rp *reverseProxy) roundRobin(backendName string) *backend.Backend {
 		return nil
 	}
 
-	if roundRobinLast >= n {
-		roundRobinLast = 0
+	if rp.roundRobinState.n >= n {
+		rp.roundRobinState.n = 0
 	}
-	liveBackend := liveBackends[roundRobinLast]
-	roundRobinLast++
+	liveBackend := liveBackends[rp.roundRobinState.n]
+	rp.roundRobinState.n++
 	return liveBackend
 }
 
