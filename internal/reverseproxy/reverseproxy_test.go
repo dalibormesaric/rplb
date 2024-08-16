@@ -44,6 +44,9 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 	rp := &reverseProxy{
 		frontends:       f,
 		roundRobinState: &roundRobinState{},
+		stickyState: &stickyState{
+			clientIpBackendHost: make(map[string]string),
+		},
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()
@@ -85,6 +88,9 @@ func TestReverseProxyWithFrontendsAndWithBackends(t *testing.T) {
 		frontends:       f,
 		backends:        b,
 		roundRobinState: &roundRobinState{},
+		stickyState: &stickyState{
+			clientIpBackendHost: make(map[string]string),
+		},
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()

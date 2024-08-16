@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -17,6 +18,7 @@ type reverseProxy struct {
 	backends        backend.Backends
 	messages        chan interface{}
 	roundRobinState *roundRobinState
+	stickyState     *stickyState
 }
 
 type TrafficFrame struct {
@@ -36,6 +38,9 @@ func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, mes
 		backends:        backends,
 		messages:        messages,
 		roundRobinState: &roundRobinState{},
+		stickyState: &stickyState{
+			clientIpBackendHost: make(map[string]string),
+		},
 	}
 	rpMux := http.NewServeMux()
 	rpMux.HandleFunc("/", rp.reverseProxyAndLoadBalance)
@@ -59,7 +64,9 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		rp.messages <- tf
 	}
 
-	liveBackend := rp.roundRobin(f.BackendName)
+	liveBackend := rp.sticky(r.RemoteAddr, f.BackendName)
+	// liveBackend := rp.roundRobin(f.BackendName)
+	// liveBackend := rp.random(f.BackendName)
 	if liveBackend == nil {
 		log.Printf("No live backends for host (%s)\n", host)
 		http.ServeFileFS(w, r, static, "static/503.html")
@@ -72,6 +79,38 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 		rp.messages <- tf
 	}
+}
+
+type stickyState struct {
+	mu                  sync.Mutex
+	clientIpBackendHost map[string]string
+}
+
+func (rp *reverseProxy) sticky(remoteAddr, backendUrl string) *backend.Backend {
+	rp.stickyState.mu.Lock()
+	defer rp.stickyState.mu.Unlock()
+	liveBackends := backend.GetLive(rp.backends[backendUrl])
+
+	n := len(liveBackends)
+	if n == 0 {
+		return nil
+	}
+
+	s := strings.Split(remoteAddr, ":")
+	clientIp := s[0]
+
+	backendHost, ok := rp.stickyState.clientIpBackendHost[clientIp]
+	if ok {
+		for _, b := range liveBackends {
+			if backendHost == b.URL.Host {
+				return b
+			}
+		}
+	}
+
+	b := liveBackends[0]
+	rp.stickyState.clientIpBackendHost[clientIp] = b.URL.Host
+	return b
 }
 
 type roundRobinState struct {
