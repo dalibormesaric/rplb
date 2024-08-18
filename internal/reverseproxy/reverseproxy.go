@@ -6,11 +6,13 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 	"sync"
+	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
+
+	"github.com/urfave/negroni/v3"
 )
 
 type reverseProxy struct {
@@ -64,20 +66,34 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		rp.messages <- tf
 	}
 
-	liveBackend := rp.sticky(r.RemoteAddr, f.BackendName)
-	// liveBackend := rp.roundRobin(f.BackendName)
-	// liveBackend := rp.random(f.BackendName)
-	if liveBackend == nil {
-		log.Printf("No live backends for host (%s)\n", host)
-		http.ServeFileFS(w, r, static, "static/503.html")
-		return
-	}
-	// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
-	liveBackend.Proxy.ServeHTTP(w, r)
+	retryTimeout := 500 * time.Millisecond
+	retryAmount := 4
+	for range retryAmount {
+		liveBackend := rp.sticky(r.RemoteAddr, f.BackendName)
+		// liveBackend := rp.roundRobin(f.BackendName)
+		// liveBackend := rp.random(f.BackendName)
+		if liveBackend == nil {
+			log.Printf("No live backends for host (%s)\n", host)
+			http.ServeFileFS(w, r, static, "static/503.html")
+			break
+		}
+		// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
+		nrw := negroni.NewResponseWriter(w)
+		liveBackend.Proxy.ServeHTTP(nrw, r)
 
-	if rp.messages != nil {
-		tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
-		rp.messages <- tf
+		if nrw.Status() < http.StatusInternalServerError {
+			if rp.messages != nil {
+				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
+				rp.messages <- tf
+				break
+			}
+		}
+
+		log.Printf("Backend (%s) return an error\n", liveBackend.URL)
+		log.Printf("Retrying in (%v)\n", retryTimeout)
+
+		time.Sleep(retryTimeout)
+		retryTimeout *= 2
 	}
 }
 
@@ -96,8 +112,8 @@ func (rp *reverseProxy) sticky(remoteAddr, backendUrl string) *backend.Backend {
 		return nil
 	}
 
-	s := strings.Split(remoteAddr, ":")
-	clientIp := s[0]
+	host, _, _ := net.SplitHostPort(remoteAddr)
+	clientIp := host
 
 	backendHost, ok := rp.stickyState.clientIpBackendHost[clientIp]
 	if ok {
