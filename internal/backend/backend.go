@@ -3,8 +3,10 @@ package backend
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -93,6 +95,15 @@ func createBackend(key, urlString string) (*Backend, error) {
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
+	proxy.ModifyResponse = func(r *http.Response) error {
+		if r.StatusCode >= http.StatusInternalServerError {
+			return fmt.Errorf("%d", r.StatusCode)
+		}
+		return nil
+	}
+	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+		w.Header().Add("RPLB-Backend-StatusCode", strconv.Itoa(http.StatusBadGateway))
+	}
 
 	return &Backend{
 		Name:          stripString(fmt.Sprintf("%s%s", key, urlString)),

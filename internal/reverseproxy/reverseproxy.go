@@ -6,13 +6,12 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
-
-	"github.com/urfave/negroni/v3"
 )
 
 type reverseProxy struct {
@@ -67,7 +66,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	}
 
 	retryTimeout := 500 * time.Millisecond
-	retryAmount := 4
+	retryAmount := 5
 	for range retryAmount {
 		liveBackend := rp.sticky(r.RemoteAddr, f.BackendName)
 		// liveBackend := rp.roundRobin(f.BackendName)
@@ -78,19 +77,17 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 			break
 		}
 		// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
-		nrw := negroni.NewResponseWriter(w)
-		liveBackend.Proxy.ServeHTTP(nrw, r)
+		liveBackend.Proxy.ServeHTTP(w, r)
+		rplb, _ := strconv.Atoi(w.Header().Get("RPLB-Backend-StatusCode"))
+		w.Header().Del("RPLB-Backend-StatusCode")
 
-		if nrw.Status() < http.StatusInternalServerError {
+		if rplb < http.StatusInternalServerError {
 			if rp.messages != nil {
 				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 				rp.messages <- tf
-				break
 			}
+			break
 		}
-
-		log.Printf("Backend (%s) return an error\n", liveBackend.URL)
-		log.Printf("Retrying in (%v)\n", retryTimeout)
 
 		time.Sleep(retryTimeout)
 		retryTimeout *= 2

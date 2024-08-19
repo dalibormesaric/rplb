@@ -46,7 +46,7 @@ http://localhost:8000
 ``` sh
 docker compose -f example/compose.yaml up rplb --build
 
-for i in {1..10}; do curl -s localhost:8080 | grep h1; sleep 1; done;
+for i in {1..10}; do curl -s localhost:8080 | grep \<h1; sleep 1; done;
 
 docker compose -f example/compose.yaml down
 ```
@@ -56,7 +56,7 @@ docker compose -f example/compose.yaml down
 ``` sh
 docker compose -f example/compose.race.yaml up rplb --build
 
-seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep h1"
+seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep \<h1"
 
 docker compose -f example/compose.race.yaml down
 ```
