@@ -97,6 +97,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 type stickyState struct {
 	mu                  sync.Mutex
 	clientIpBackendHost map[string]string
+	n                   int
 }
 
 func (rp *reverseProxy) sticky(remoteAddr, backendUrl string) *backend.Backend {
@@ -121,8 +122,12 @@ func (rp *reverseProxy) sticky(remoteAddr, backendUrl string) *backend.Backend {
 		}
 	}
 
+	if rp.stickyState.n >= n {
+		rp.stickyState.n = 0
+	}
 	b := liveBackends[0]
 	rp.stickyState.clientIpBackendHost[clientIp] = b.URL.Host
+	rp.stickyState.n++
 	return b
 }
 

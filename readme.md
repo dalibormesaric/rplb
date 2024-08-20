@@ -73,11 +73,11 @@ docker compose -f example/compose.race.yaml down
 - [x] Version in dashboard
 - [x] Version docker images
 - [x] Use ldflags for version
-- [ ] Retries
-- [ ] Load Balancing Algorithms
+- [x] Retries
+- [x] Load Balancing Algorithms
     - [x] random
     - [x] round robin
-    - [/] sticky round robin
+    - [x] sticky round robin
 - [ ] /metrics
 
 ### Some ideas
