@@ -7,6 +7,12 @@ With this project I wanted to have two things:
 1. A simple way to load balance traffic between bare metal kubernetes cluster nodes
 1. A fun Go project to work on
 
+## Features
+
+1. Simple configuration
+1. Dashboard
+1. Resiliency with Retry Strategy
+
 ## How to use it?
 
 ### Locally
@@ -70,11 +76,9 @@ docker compose -f example/compose.race.yaml down
 
 ### TODO:
 
-- [x] Version in dashboard
-- [x] Version docker images
-- [x] Use ldflags for version
-- [x] Retries
 - [x] Load Balancing Algorithms
+    - [ ] abstract
+    - [ ] make configurable
     - [x] random
     - [x] round robin
     - [x] sticky round robin
