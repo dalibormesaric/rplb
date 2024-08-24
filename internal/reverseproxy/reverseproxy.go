@@ -3,23 +3,21 @@ package reverseproxy
 import (
 	"embed"
 	"log"
-	"math/rand"
 	"net"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
+	"github.com/dalibormesaric/rplb/internal/loadbalancing"
 )
 
 type reverseProxy struct {
-	frontends       frontend.Frontends
-	backends        backend.Backends
-	messages        chan interface{}
-	roundRobinState *roundRobinState
-	stickyState     *stickyState
+	frontends     frontend.Frontends
+	backends      backend.Backends
+	messages      chan interface{}
+	loadbalancing loadbalancing.Algorithm
 }
 
 type TrafficFrame struct {
@@ -33,15 +31,12 @@ type TrafficBackendFrame struct {
 	FrontendName string
 }
 
-func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, messages chan interface{}) {
+func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, loadbalancing loadbalancing.Algorithm, messages chan interface{}) {
 	rp := &reverseProxy{
-		frontends:       frontends,
-		backends:        backends,
-		messages:        messages,
-		roundRobinState: &roundRobinState{},
-		stickyState: &stickyState{
-			clientIpBackendHost: make(map[string]string),
-		},
+		frontends:     frontends,
+		backends:      backends,
+		messages:      messages,
+		loadbalancing: loadbalancing,
 	}
 	rpMux := http.NewServeMux()
 	rpMux.HandleFunc("/", rp.reverseProxyAndLoadBalance)
@@ -68,9 +63,8 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	retryTimeout := 500 * time.Millisecond
 	retryAmount := 5
 	for range retryAmount {
-		liveBackend := rp.sticky(r.RemoteAddr, f.BackendName)
-		// liveBackend := rp.roundRobin(f.BackendName)
-		// liveBackend := rp.random(f.BackendName)
+		liveBackends := backend.GetLive(rp.backends[f.BackendName])
+		liveBackend := rp.loadbalancing.Get(r, liveBackends)
 		if liveBackend == nil {
 			log.Printf("No live backends for host (%s)\n", host)
 			http.ServeFileFS(w, r, static, "static/503.html")
@@ -92,77 +86,4 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		time.Sleep(retryTimeout)
 		retryTimeout *= 2
 	}
-}
-
-type stickyState struct {
-	mu                  sync.Mutex
-	clientIpBackendHost map[string]string
-	n                   int
-}
-
-func (rp *reverseProxy) sticky(remoteAddr, backendUrl string) *backend.Backend {
-	rp.stickyState.mu.Lock()
-	defer rp.stickyState.mu.Unlock()
-	liveBackends := backend.GetLive(rp.backends[backendUrl])
-
-	n := len(liveBackends)
-	if n == 0 {
-		return nil
-	}
-
-	host, _, _ := net.SplitHostPort(remoteAddr)
-	clientIp := host
-
-	backendHost, ok := rp.stickyState.clientIpBackendHost[clientIp]
-	if ok {
-		for _, b := range liveBackends {
-			if backendHost == b.URL.Host {
-				return b
-			}
-		}
-	}
-
-	if rp.stickyState.n >= n {
-		rp.stickyState.n = 0
-	}
-	b := liveBackends[rp.stickyState.n]
-	rp.stickyState.clientIpBackendHost[clientIp] = b.URL.Host
-	rp.stickyState.n++
-	return b
-}
-
-type roundRobinState struct {
-	mu sync.Mutex
-	n  int
-}
-
-func (rp *reverseProxy) roundRobin(backendName string) *backend.Backend {
-	rp.roundRobinState.mu.Lock()
-	defer rp.roundRobinState.mu.Unlock()
-	liveBackends := backend.GetLive(rp.backends[backendName])
-
-	n := len(liveBackends)
-	if n == 0 {
-		return nil
-	}
-
-	if rp.roundRobinState.n >= n {
-		rp.roundRobinState.n = 0
-	}
-	liveBackend := liveBackends[rp.roundRobinState.n]
-	rp.roundRobinState.n++
-	return liveBackend
-}
-
-func (rp *reverseProxy) random(backendName string) *backend.Backend {
-	liveBackends := backend.GetLive(rp.backends[backendName])
-
-	n := len(liveBackends)
-	if n == 0 {
-		return nil
-	}
-
-	randBackend := rand.Intn(n)
-	liveBackend := liveBackends[randBackend]
-	return liveBackend
 }

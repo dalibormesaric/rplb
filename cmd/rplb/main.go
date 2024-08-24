@@ -8,6 +8,7 @@ import (
 	"github.com/dalibormesaric/rplb/internal/config"
 	"github.com/dalibormesaric/rplb/internal/dashboard"
 	"github.com/dalibormesaric/rplb/internal/frontend"
+	"github.com/dalibormesaric/rplb/internal/loadbalancing"
 	"github.com/dalibormesaric/rplb/internal/reverseproxy"
 )
 
@@ -30,7 +31,7 @@ func main() {
 	}
 	messages := backends.Monitor()
 
-	go reverseproxy.ListenAndServe(frontends, backends, messages)
+	go reverseproxy.ListenAndServe(frontends, backends, loadbalancing.NewAlgorithm(loadbalancing.Sticky), messages)
 
 	dashboard.ListenAndServe(frontends, backends, messages, config.Version)
 }

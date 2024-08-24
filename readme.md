@@ -77,7 +77,7 @@ docker compose -f example/compose.race.yaml down
 ### TODO:
 
 - [x] Load Balancing Algorithms
-    - [ ] abstract
+    - [x] abstract
     - [ ] make configurable
     - [x] random
     - [x] round robin

@@ -10,6 +10,7 @@ import (
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
+	"github.com/dalibormesaric/rplb/internal/loadbalancing"
 )
 
 func TestReverseProxyWithNoFrontends(t *testing.T) {
@@ -42,11 +43,8 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 		t.Error(err)
 	}
 	rp := &reverseProxy{
-		frontends:       f,
-		roundRobinState: &roundRobinState{},
-		stickyState: &stickyState{
-			clientIpBackendHost: make(map[string]string),
-		},
+		frontends:     f,
+		loadbalancing: loadbalancing.NewAlgorithm(loadbalancing.Random),
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()
@@ -85,12 +83,9 @@ func TestReverseProxyWithFrontendsAndWithBackends(t *testing.T) {
 	}
 	b["b"][0].SetLive(true)
 	rp := &reverseProxy{
-		frontends:       f,
-		backends:        b,
-		roundRobinState: &roundRobinState{},
-		stickyState: &stickyState{
-			clientIpBackendHost: make(map[string]string),
-		},
+		frontends:     f,
+		backends:      b,
+		loadbalancing: loadbalancing.NewAlgorithm(loadbalancing.Random),
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()
