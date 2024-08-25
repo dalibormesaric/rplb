@@ -82,10 +82,12 @@ docker compose -f example/compose.race.yaml down
     - [x] random
     - [x] round robin
     - [x] sticky round robin
+    - [ ] first
 - [ ] /metrics
 
 ### Some ideas
 
+- [ ] https://bazel-contrib.github.io/SIG-rules-authors/go-tutorial.html
 - [ ] https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
 - [ ] https://stackoverflow.com/questions/70442770/infinite-scrolling-carousel-css-only
 

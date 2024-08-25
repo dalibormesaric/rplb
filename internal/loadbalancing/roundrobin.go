@@ -18,11 +18,11 @@ type roundRobinState struct {
 
 var _ Algorithm = (*roundRobin)(nil)
 
-func (algo *roundRobin) Get(r *http.Request, liveBackends []*backend.Backend) *backend.Backend {
+func (algo *roundRobin) Get(r *http.Request, backends []*backend.Backend) *backend.Backend {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
-	n := len(liveBackends)
+	n := len(backends)
 	if n == 0 {
 		return nil
 	}
@@ -30,7 +30,7 @@ func (algo *roundRobin) Get(r *http.Request, liveBackends []*backend.Backend) *b
 	if algo.state.n >= n {
 		algo.state.n = 0
 	}
-	liveBackend := liveBackends[algo.state.n]
+	b := backends[algo.state.n]
 	algo.state.n++
-	return liveBackend
+	return b
 }

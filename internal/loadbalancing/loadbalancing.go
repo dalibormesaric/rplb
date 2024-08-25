@@ -13,6 +13,7 @@ const (
 )
 
 type Algorithm interface {
+	// Get returns next available backend according to the algorithm
 	Get(r *http.Request, liveBackends []*backend.Backend) *backend.Backend
 }
 
