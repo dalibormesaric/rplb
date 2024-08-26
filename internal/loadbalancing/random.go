@@ -1,7 +1,7 @@
 package loadbalancing
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"net/http"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -18,7 +18,7 @@ func (_ *random) Get(r *http.Request, liveBackends []*backend.Backend) *backend.
 		return nil
 	}
 
-	randBackend := rand.Intn(n)
+	randBackend := rand.IntN(n)
 	liveBackend := liveBackends[randBackend]
 	return liveBackend
 }
