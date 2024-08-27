@@ -42,9 +42,10 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	algo, _ := loadbalancing.NewAlgorithm(loadbalancing.Random)
 	rp := &reverseProxy{
 		frontends:     f,
-		loadbalancing: loadbalancing.NewAlgorithm(loadbalancing.Random),
+		loadbalancing: algo,
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()
@@ -82,10 +83,11 @@ func TestReverseProxyWithFrontendsAndWithBackends(t *testing.T) {
 		t.Error(err)
 	}
 	b["b"][0].SetLive(true)
+	algo, _ := loadbalancing.NewAlgorithm(loadbalancing.Random)
 	rp := &reverseProxy{
 		frontends:     f,
 		backends:      b,
-		loadbalancing: loadbalancing.NewAlgorithm(loadbalancing.Random),
+		loadbalancing: algo,
 	}
 	ts := httptest.NewServer(http.HandlerFunc(rp.reverseProxyAndLoadBalance))
 	defer ts.Close()

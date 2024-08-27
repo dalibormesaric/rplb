@@ -31,7 +31,11 @@ func main() {
 	}
 	messages := backends.Monitor()
 
-	go reverseproxy.ListenAndServe(frontends, backends, loadbalancing.NewAlgorithm(loadbalancing.Sticky), messages)
+	algo, err := loadbalancing.NewAlgorithm(loadbalancing.Sticky)
+	if err != nil {
+		log.Fatalf("New algorithm: %s", err)
+	}
+	go reverseproxy.ListenAndServe(frontends, backends, algo, messages)
 
 	dashboard.ListenAndServe(frontends, backends, messages, config.Version)
 }
