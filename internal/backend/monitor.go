@@ -12,7 +12,7 @@ const (
 	healthCheckTimeout = 2 * time.Second
 )
 
-func (backends Backends) Monitor() chan interface{} {
+func (backends BackendPool) Monitor() chan interface{} {
 	messages := make(chan interface{})
 
 	for _, v := range backends {

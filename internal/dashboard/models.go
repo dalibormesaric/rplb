@@ -12,11 +12,11 @@ type BaseModel struct {
 
 type MonitorModel struct {
 	BaseModel
-	Backends backend.Backends
+	Backends backend.BackendPool
 }
 
 type TrafficModel struct {
 	BaseModel
 	Frontends frontend.Frontends
-	Backends  backend.Backends
+	Backends  backend.BackendPool
 }

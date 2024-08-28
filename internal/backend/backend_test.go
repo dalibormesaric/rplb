@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestCreateBackends(t *testing.T) {
+func TestNewBackendPool(t *testing.T) {
 	var tests = []struct {
 		nameUrlPairs string
 		key          string
@@ -15,18 +15,18 @@ func TestCreateBackends(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		backends, err := CreateBackends(test.nameUrlPairs)
+		bp, err := NewBackendPool(test.nameUrlPairs)
 		if err != nil {
 			t.Error(err)
 		}
-		b := backends[test.key][0]
+		b := bp[test.key][0]
 		if b.URL.Host != test.host {
 			t.Errorf("wrong backend url: want (%s) got (%s)\n", test.host, b.URL.Host)
 		}
 	}
 }
 
-func TestCreateBackendsErrors(t *testing.T) {
+func TestNewBackendPoolErrors(t *testing.T) {
 	var tests = []struct {
 		nameUrlPairs string
 		err          error
@@ -43,7 +43,7 @@ func TestCreateBackendsErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		_, err := CreateBackends(test.nameUrlPairs)
+		_, err := NewBackendPool(test.nameUrlPairs)
 		if test.err != nil && err.Error() != test.err.Error() {
 			t.Errorf("was expecting an error: want (%s)\ngot: (%s)\n", test.err.Error(), err.Error())
 		}

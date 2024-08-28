@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	beName string = "test"
+	bpName string = "test"
 	b1     string = "http://b:1234"
 	b2     string = "http://b:1235"
 	b3     string = "http://b:1236"
@@ -16,8 +16,8 @@ const (
 
 func TestRoundRobinSequence(t *testing.T) {
 	bs := func() []*backend.Backend {
-		be, _ := backend.CreateBackends(fmt.Sprintf("%s,%s,%s,%s,%s,%s", beName, b1, beName, b2, beName, b3))
-		return be[beName]
+		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", bpName, b1, bpName, b2, bpName, b3))
+		return bp[bpName]
 	}()
 
 	var test = struct {

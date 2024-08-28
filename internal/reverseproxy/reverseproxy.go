@@ -15,7 +15,7 @@ import (
 
 type reverseProxy struct {
 	frontends     frontend.Frontends
-	backends      backend.Backends
+	bp            backend.BackendPool
 	messages      chan interface{}
 	loadbalancing loadbalancing.Algorithm
 }
@@ -31,10 +31,10 @@ type TrafficBackendFrame struct {
 	FrontendName string
 }
 
-func ListenAndServe(frontends frontend.Frontends, backends backend.Backends, loadbalancing loadbalancing.Algorithm, messages chan interface{}) {
+func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, loadbalancing loadbalancing.Algorithm, messages chan interface{}) {
 	rp := &reverseProxy{
 		frontends:     frontends,
-		backends:      backends,
+		bp:            bp,
 		messages:      messages,
 		loadbalancing: loadbalancing,
 	}
@@ -63,7 +63,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	retryTimeout := 500 * time.Millisecond
 	retryAmount := 5
 	for range retryAmount {
-		liveBackends := backend.GetLive(rp.backends[f.BackendName])
+		liveBackends := backend.GetLive(rp.bp[f.BackendName])
 		liveBackend := rp.loadbalancing.Get(r, liveBackends)
 		if liveBackend == nil {
 			log.Printf("No live backends for host (%s)\n", host)

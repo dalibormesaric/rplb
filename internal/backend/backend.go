@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-type Backends map[string][]*Backend
+type BackendPool map[string][]*Backend
 
 type Backend struct {
 	mu            sync.RWMutex
@@ -39,13 +39,13 @@ type LiveMonitorFrame struct {
 	ColorCode int64
 }
 
-// CreateBackends parses name url pairs and returns created Backends.
-func CreateBackends(nameUrlPairs string) (Backends, error) {
-	backends := make(Backends)
+// NewBackendPool parses name url pairs and returns created BackendPool.
+func NewBackendPool(nameUrlPairs string) (BackendPool, error) {
+	bp := make(BackendPool)
 
 	if strings.TrimSpace(nameUrlPairs) == "" {
 		log.Println("No backends configured")
-		return backends, nil
+		return bp, nil
 	}
 
 	split := strings.Split(nameUrlPairs, ",")
@@ -67,22 +67,22 @@ func CreateBackends(nameUrlPairs string) (Backends, error) {
 				return nil, err
 			}
 
-			_, ok := backends[k]
+			_, ok := bp[k]
 			if !ok {
-				backends[k] = []*Backend{b}
+				bp[k] = []*Backend{b}
 			} else {
-				for _, existingBackend := range backends[k] {
+				for _, existingBackend := range bp[k] {
 					if existingBackend.URL.Host == b.URL.Host {
 						return nil, fmt.Errorf("url (%s) already exist in backend (%s)", backendUrl, k)
 					}
 				}
-				backends[k] = append(backends[k], b)
+				bp[k] = append(bp[k], b)
 			}
 			log.Printf("Added backend url (%s) for (%s)\n", backendUrl, k)
 		}
 	}
 
-	return backends, nil
+	return bp, nil
 }
 
 func createBackend(key, urlString string) (*Backend, error) {

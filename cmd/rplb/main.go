@@ -25,17 +25,17 @@ func main() {
 		log.Fatalf("Create frontends: %s", err)
 	}
 
-	backends, err := backend.CreateBackends(*be)
+	bp, err := backend.NewBackendPool(*be)
 	if err != nil {
-		log.Fatalf("Create backends: %s", err)
+		log.Fatalf("NewBackendPool: %s", err)
 	}
-	messages := backends.Monitor()
+	messages := bp.Monitor()
 
 	algo, err := loadbalancing.NewAlgorithm(loadbalancing.Sticky)
 	if err != nil {
-		log.Fatalf("New algorithm: %s", err)
+		log.Fatalf("NewAlgorithm: %s", err)
 	}
-	go reverseproxy.ListenAndServe(frontends, backends, algo, messages)
+	go reverseproxy.ListenAndServe(frontends, bp, algo, messages)
 
-	dashboard.ListenAndServe(frontends, backends, messages, config.Version)
+	dashboard.ListenAndServe(frontends, bp, messages, config.Version)
 }
