@@ -9,6 +9,7 @@ import (
 
 const (
 	Random     string = "random"
+	First      string = "first"
 	RoundRobin string = "roundrobin"
 	Sticky     string = "sticky"
 )
@@ -30,6 +31,8 @@ func NewAlgorithm(name string) (Algorithm, error) {
 		return &roundRobin{
 			state: &roundRobinState{},
 		}, nil
+	case First:
+		return &first{}, nil
 	case Random:
 		return &random{}, nil
 	default:

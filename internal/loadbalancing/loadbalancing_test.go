@@ -23,6 +23,11 @@ func TestNewAlgorithm(t *testing.T) {
 			err:      nil,
 		},
 		{
+			name:     First,
+			expected: reflect.TypeOf(&first{}).String(),
+			err:      nil,
+		},
+		{
 			name:     Random,
 			expected: reflect.TypeOf(&random{}).String(),
 			err:      nil,
