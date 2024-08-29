@@ -2,6 +2,7 @@ package loadbalancing
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -19,7 +20,13 @@ type Algorithm interface {
 	Get(r *http.Request, liveBackends []*backend.Backend) *backend.Backend
 }
 
-func NewAlgorithm(name string) (Algorithm, error) {
+func NewAlgorithm(name string) (algo Algorithm, err error) {
+	defer func() {
+		if err == nil {
+			log.Printf("Using algorithm (%s)\n", name)
+		}
+	}()
+
 	switch name {
 	case Sticky:
 		return &sticky{

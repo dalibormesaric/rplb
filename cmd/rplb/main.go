@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -15,6 +16,7 @@ import (
 var (
 	fe = flag.String("f", "", "frontends")
 	be = flag.String("b", "", "backends")
+	a  = flag.String("a", loadbalancing.Sticky, fmt.Sprintf("Algorithm used for loadbalancing. Choose from: %s, %s, %s or %s.", loadbalancing.First, loadbalancing.Random, loadbalancing.RoundRobin, loadbalancing.Sticky))
 )
 
 func main() {
@@ -31,7 +33,7 @@ func main() {
 	}
 	messages := bp.Monitor()
 
-	algo, err := loadbalancing.NewAlgorithm(loadbalancing.Sticky)
+	algo, err := loadbalancing.NewAlgorithm(*a)
 	if err != nil {
 		log.Fatalf("NewAlgorithm: %s", err)
 	}
