@@ -1,7 +1,6 @@
 package loadbalancing
 
 import (
-	"net/http"
 	"sync"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -18,7 +17,7 @@ type roundRobinState struct {
 
 var _ Algorithm = (*roundRobin)(nil)
 
-func (algo *roundRobin) Get(r *http.Request, backends []*backend.Backend) *backend.Backend {
+func (algo *roundRobin) Get(_ string, backends []*backend.Backend) *backend.Backend {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 

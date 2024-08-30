@@ -2,7 +2,6 @@ package loadbalancing
 
 import (
 	"net"
-	"net/http"
 	"sync"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -20,33 +19,36 @@ type stickyState struct {
 
 var _ Algorithm = (*sticky)(nil)
 
-func (algo *sticky) Get(r *http.Request, liveBackends []*backend.Backend) *backend.Backend {
+func (algo *sticky) Get(remoteAddr string, backends []*backend.Backend) *backend.Backend {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
-	n := len(liveBackends)
+	n := len(backends)
 	if n == 0 {
 		return nil
 	}
 
-	host, _, _ := net.SplitHostPort(r.RemoteAddr)
+	host, _, err := net.SplitHostPort(remoteAddr)
+	if err != nil {
+		return nil
+	}
 	clientIp := host
 
 	backendHost, ok := algo.state.clientIpBackendHost[clientIp]
 	if ok {
-		for _, b := range liveBackends {
+		for _, b := range backends {
 			if backendHost == b.URL.Host {
 				return b
 			}
 		}
 	} else {
-		algo.state.n++
+		defer func() { algo.state.n++ }()
 	}
 
 	if algo.state.n >= n {
 		algo.state.n = 0
 	}
-	b := liveBackends[algo.state.n]
+	b := backends[algo.state.n]
 	algo.state.clientIpBackendHost[clientIp] = b.URL.Host
 	return b
 }

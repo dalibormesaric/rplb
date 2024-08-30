@@ -8,16 +8,16 @@ import (
 )
 
 const (
-	bpName string = "test"
-	b1     string = "http://b:1234"
-	b2     string = "http://b:1235"
-	b3     string = "http://b:1236"
+	roundRobinBpName string = RoundRobin
+	roundRobinB1     string = "http://b:1234"
+	roundRobinB2     string = "http://b:1235"
+	roundRobinB3     string = "http://b:1236"
 )
 
 func TestRoundRobinSequence(t *testing.T) {
 	bs := func() []*backend.Backend {
-		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", bpName, b1, bpName, b2, bpName, b3))
-		return bp[bpName]
+		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", roundRobinBpName, roundRobinB1, roundRobinBpName, roundRobinB2, roundRobinBpName, roundRobinB3))
+		return bp[roundRobinBpName]
 	}()
 
 	var test = struct {
@@ -25,12 +25,12 @@ func TestRoundRobinSequence(t *testing.T) {
 		expected []string
 	}{
 		bs:       bs,
-		expected: []string{b1, b2, b3, b1, b2, b3, b1},
+		expected: []string{roundRobinB1, roundRobinB2, roundRobinB3, roundRobinB1, roundRobinB2, roundRobinB3, roundRobinB1},
 	}
 
 	roundRobin, _ := NewAlgorithm(RoundRobin)
 	for _, expected := range test.expected {
-		b := roundRobin.Get(nil, test.bs)
+		b := roundRobin.Get("", test.bs)
 		if b.URL.String() != expected {
 			t.Errorf("wrong backend: want (%s) got (%s)", expected, b.URL.String())
 		}
@@ -47,7 +47,7 @@ func TestRoundRobinGetNil(t *testing.T) {
 	}
 
 	roundRobin, _ := NewAlgorithm(RoundRobin)
-	b := roundRobin.Get(nil, test.bs)
+	b := roundRobin.Get("", test.bs)
 	if b != test.expected {
 		t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 	}

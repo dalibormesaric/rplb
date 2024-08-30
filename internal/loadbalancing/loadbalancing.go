@@ -3,7 +3,6 @@ package loadbalancing
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 )
@@ -17,7 +16,7 @@ const (
 
 type Algorithm interface {
 	// Get returns next available backend according to the algorithm
-	Get(r *http.Request, liveBackends []*backend.Backend) *backend.Backend
+	Get(remoteAddr string, backends []*backend.Backend) *backend.Backend
 }
 
 func NewAlgorithm(name string) (algo Algorithm, err error) {

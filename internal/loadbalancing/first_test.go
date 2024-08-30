@@ -30,7 +30,7 @@ func TestFirstSequence(t *testing.T) {
 
 	first, _ := NewAlgorithm(First)
 	for _, expected := range test.expected {
-		b := first.Get(nil, test.bs)
+		b := first.Get("", test.bs)
 		if b.URL.String() != expected {
 			t.Errorf("wrong backend: want (%s) got (%s)", expected, b.URL.String())
 		}
@@ -47,7 +47,7 @@ func TestFirstGetNil(t *testing.T) {
 	}
 
 	first, _ := NewAlgorithm(First)
-	b := first.Get(nil, test.bs)
+	b := first.Get("", test.bs)
 	if b != test.expected {
 		t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 	}
