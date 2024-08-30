@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	firstBpName string = "first"
+	firstBpName string = First
 	firstB1     string = "http://b:1234"
 	firstB2     string = "http://b:1235"
 	firstB3     string = "http://b:1236"

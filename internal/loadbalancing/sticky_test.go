@@ -9,16 +9,16 @@ import (
 
 const (
 	stickyBpName string = Sticky
-	b1           string = "http://b:1234"
-	b2           string = "http://b:1235"
-	b3           string = "http://b:1236"
-	c1           string = "192.168.0.1:1234"
-	c2           string = "192.168.0.2:1235"
+	stickyB1     string = "http://b:1234"
+	stickyB2     string = "http://b:1235"
+	stickyB3     string = "http://b:1236"
+	stickyC1     string = "10.0.0.1:1234"
+	stickyC2     string = "10.0.0.2:1235"
 )
 
 func TestStickySequence(t *testing.T) {
 	bs := func() []*backend.Backend {
-		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", stickyBpName, b1, stickyBpName, b2, stickyBpName, b3))
+		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", stickyBpName, stickyB1, stickyBpName, stickyB2, stickyBpName, stickyB3))
 		return bp[stickyBpName]
 	}()
 
@@ -28,8 +28,8 @@ func TestStickySequence(t *testing.T) {
 		expected []string
 	}{
 		bs:       bs,
-		clients:  []string{c1, c1, c2, c2, c1, c2, c1},
-		expected: []string{b1, b1, b2, b2, b1, b2, b1},
+		clients:  []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
+		expected: []string{stickyB1, stickyB1, stickyB2, stickyB2, stickyB1, stickyB2, stickyB1},
 	}
 
 	sticky, _ := NewAlgorithm(Sticky)

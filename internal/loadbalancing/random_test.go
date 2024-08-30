@@ -1,0 +1,52 @@
+package loadbalancing
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/dalibormesaric/rplb/internal/backend"
+)
+
+const (
+	randomBpName string = Random
+	randomB1     string = "http://b:1234"
+	randomB2     string = "http://b:1235"
+	randomB3     string = "http://b:1236"
+)
+
+func TestRandomSequence(t *testing.T) {
+	bs := func() []*backend.Backend {
+		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", randomBpName, randomB1, randomBpName, randomB2, randomBpName, randomB3))
+		return bp[randomBpName]
+	}()
+
+	var test = struct {
+		bs []*backend.Backend
+	}{
+		bs: bs,
+	}
+
+	random, _ := NewAlgorithm(Random)
+	for _ = range 7 {
+		b := random.Get("", test.bs)
+		if b.URL.String() != randomB1 && b.URL.String() != randomB2 && b.URL.String() != randomB3 {
+			t.Errorf("wrong backend: want (%s, %s or %s) got (%s)", randomB1, randomB2, randomB3, b.URL.String())
+		}
+	}
+}
+
+func TestRandomGetNil(t *testing.T) {
+	var test = struct {
+		bs       []*backend.Backend
+		expected *backend.Backend
+	}{
+		bs:       []*backend.Backend{},
+		expected: nil,
+	}
+
+	random, _ := NewAlgorithm(Random)
+	b := random.Get("", test.bs)
+	if b != test.expected {
+		t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
+	}
+}
