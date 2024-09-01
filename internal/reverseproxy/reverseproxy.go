@@ -72,10 +72,10 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		}
 		// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
 		liveBackend.Proxy.ServeHTTP(w, r)
-		rplb, _ := strconv.Atoi(w.Header().Get("RPLB-Backend-StatusCode"))
-		w.Header().Del("RPLB-Backend-StatusCode")
+		rplbBackendStatusCode, _ := strconv.Atoi(w.Header().Get(backend.RPLBBackendStatusCode))
+		w.Header().Del(backend.RPLBBackendStatusCode)
 
-		if rplb < http.StatusInternalServerError {
+		if rplbBackendStatusCode < http.StatusInternalServerError {
 			if rp.messages != nil {
 				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 				rp.messages <- tf

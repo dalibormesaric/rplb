@@ -13,6 +13,11 @@ import (
 	"time"
 )
 
+const (
+	// this is used for a hack to be able to pass error status code from backend to reverse proxy and trigger a retry
+	RPLBBackendStatusCode string = "RPLB-Backend-StatusCode"
+)
+
 type BackendPool map[string][]*Backend
 
 type Backend struct {
@@ -39,7 +44,7 @@ type LiveMonitorFrame struct {
 	ColorCode int64
 }
 
-// NewBackendPool parses name url pairs and returns created BackendPool.
+// NewBackendPool parses comma-separated list of Name and URL pairs and returns BackendPool.
 func NewBackendPool(nameUrlPairs string) (BackendPool, error) {
 	bp := make(BackendPool)
 
@@ -102,7 +107,7 @@ func createBackend(key, urlString string) (*Backend, error) {
 		return nil
 	}
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-		w.Header().Add("RPLB-Backend-StatusCode", strconv.Itoa(http.StatusBadGateway))
+		w.Header().Add(RPLBBackendStatusCode, strconv.Itoa(http.StatusBadGateway))
 	}
 
 	return &Backend{
