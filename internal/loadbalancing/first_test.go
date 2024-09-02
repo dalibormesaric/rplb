@@ -38,17 +38,25 @@ func TestFirstSequence(t *testing.T) {
 }
 
 func TestFirstGetNil(t *testing.T) {
-	var test = struct {
+	var tests = []struct {
 		bs       []*backend.Backend
 		expected *backend.Backend
 	}{
-		bs:       []*backend.Backend{},
-		expected: nil,
+		{
+			bs:       nil,
+			expected: nil,
+		},
+		{
+			bs:       []*backend.Backend{},
+			expected: nil,
+		},
 	}
 
-	first, _ := NewAlgorithm(First)
-	b := first.Get("", test.bs)
-	if b != test.expected {
-		t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
+	for _, test := range tests {
+		first, _ := NewAlgorithm(First)
+		b := first.Get("", test.bs)
+		if b != test.expected {
+			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
+		}
 	}
 }

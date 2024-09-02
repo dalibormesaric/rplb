@@ -42,17 +42,48 @@ func TestStickySequence(t *testing.T) {
 }
 
 func TestStickyGetNil(t *testing.T) {
-	var test = struct {
-		bs       []*backend.Backend
-		expected *backend.Backend
+	var tests = []struct {
+		bs         []*backend.Backend
+		remoteAddr string
+		expected   *backend.Backend
 	}{
-		bs:       []*backend.Backend{},
-		expected: nil,
+		{
+			bs:         nil,
+			remoteAddr: stickyC1,
+			expected:   nil,
+		},
+		{
+			bs:         []*backend.Backend{},
+			remoteAddr: stickyC1,
+			expected:   nil,
+		},
+		{
+			bs:         []*backend.Backend{&backend.Backend{}},
+			remoteAddr: "",
+			expected:   nil,
+		},
+		{
+			bs:         []*backend.Backend{&backend.Backend{}},
+			remoteAddr: "wrong",
+			expected:   nil,
+		},
+		{
+			bs:         []*backend.Backend{&backend.Backend{}},
+			remoteAddr: "1234",
+			expected:   nil,
+		},
+		{
+			bs:         []*backend.Backend{&backend.Backend{}},
+			remoteAddr: "10.0.0.1",
+			expected:   nil,
+		},
 	}
 
-	sticky, _ := NewAlgorithm(Sticky)
-	b := sticky.Get("", test.bs)
-	if b != test.expected {
-		t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
+	for _, test := range tests {
+		sticky, _ := NewAlgorithm(Sticky)
+		b := sticky.Get(test.remoteAddr, test.bs)
+		if b != test.expected {
+			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
+		}
 	}
 }
