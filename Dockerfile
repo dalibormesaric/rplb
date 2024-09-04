@@ -14,4 +14,8 @@ RUN go build -ldflags "-X github.com/dalibormesaric/rplb/internal/config.Version
 EXPOSE 8000
 EXPOSE 8080
 
-CMD ["sh", "-c", "app -f \"${FE}\" -b \"${BE}\""]
+ENV FE=
+ENV BE=
+ENV ALGO=sticky
+
+CMD ["sh", "-c", "app -f \"${FE}\" -b \"${BE}\" -a \"${ALGO}\""]
