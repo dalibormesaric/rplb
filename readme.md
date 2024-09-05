@@ -1,6 +1,6 @@
 # RPLB – Reverse Proxy Load Balancer
 
-A simple application that can load balance requests based on configured hostname accross configured backends.
+A simple application that can load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
 ## Features
 
@@ -11,8 +11,8 @@ A simple application that can load balance requests based on configured hostname
    - Round Robin
    - Random
    - First
-- Resilient
-   - Retry
+- 🛟 Resiliency
+   - Retries
 - 📈 Dashboard
    - Monitor
    - Traffic
@@ -28,18 +28,18 @@ You can run `RPLB` with these commands:
 ``` sh
 docker pull ghcr.io/dalibormesaric/rplb:latest
 
-docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=localhost,myapp -e BE=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
+docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=myapp.example.com,myapp -e BE=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
 ```
 
 ### Configuration
 
-> FE=localhost,myapp
-> - `localhost` is hostname where `RPLB` is running, so in this case you would access your backend via `http://localhost:8080` and the Dashboard via `http://localhost:8000`
-> - `myapp` is name of the Backend Pool that this hostname is connected to
+> FE=myapp.example.com,myapp
+- `myapp.example.com` is hostname where `RPLB` is running, so in this case you would access your backend via `http://myapp.example.com:8080` and the Dashboard via `http://myapp.example.com:8000`
+- `myapp` is name of the Backend Pool that this hostname is connected to
 
 > BE=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234
-> - `myapp` is name of the Backend Pool to which the URL is assigned
-> - `http://10.0.0.1:1234`, `http://10.0.0.1:1234` and `http://10.0.0.3:1234` are the URLs of your application
+- `myapp` is name of the Backend Pool to which the URL is assigned
+- `http://10.0.0.1:1234`, `http://10.0.0.1:1234` and `http://10.0.0.3:1234` are the URLs of your application
 
 ### Home Assistant
 
