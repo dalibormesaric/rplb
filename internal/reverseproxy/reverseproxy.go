@@ -40,6 +40,8 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, loadba
 	}
 	rpMux := http.NewServeMux()
 	rpMux.HandleFunc("/", rp.reverseProxyAndLoadBalance)
+
+	log.Printf("Reverse Proxy listening on :8080\n")
 	http.ListenAndServe(":8080", rpMux)
 }
 

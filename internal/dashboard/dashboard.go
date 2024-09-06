@@ -3,6 +3,7 @@ package dashboard
 import (
 	"embed"
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 
@@ -50,6 +51,7 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messag
 		a.ExecuteTemplate(w, "traffic.html", TrafficModel{BaseModel: BaseModel{SelectedMenu: "traffic", Version: version}, Frontends: frontends, Backends: bp})
 	})
 
+	log.Printf("Dashboard listening on :8000\n")
 	http.ListenAndServe(":8000", nil)
 }
 
