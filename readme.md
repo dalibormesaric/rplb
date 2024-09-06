@@ -1,6 +1,6 @@
 # RPLB – Reverse Proxy Load Balancer
 
-A simple application that can load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
+Load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
 ## Features
 
@@ -43,6 +43,10 @@ docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=myapp.example.com,myapp -e BE
 
 ### Home Assistant
 
+To run custom docker images, use [Advanced SSH & Web Terminal](https://github.com/hassio-addons/addon-ssh) from Community Add-ons.
+
+To resolve custom domains on the same IP where Home Assistant is running, use [AdGuard Home](https://www.home-assistant.io/integrations/adguard/) and its feature DNS rewrites.
+
 ## Try it out
 
 There is an `/example` folder in this repository containing already configured `RPLB` with tree backends. You can try it our by running:
@@ -72,6 +76,10 @@ docker build --build-arg="VERSION=$(git describe --tags --abbrev=0)" -t rplb .
 - https://github.com/docker/setup-buildx-action
 
 ### Testing
+
+``` sh
+go test ./... -count=1
+```
 
 ### Testing data races
 
@@ -110,5 +118,3 @@ With this project I wanted to have two things:
 - [ ] https://bazel-contrib.github.io/SIG-rules-authors/go-tutorial.html
 - [ ] https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
 - [ ] https://stackoverflow.com/questions/70442770/infinite-scrolling-carousel-css-only
-
-### Docker
