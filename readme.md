@@ -90,15 +90,6 @@ With this project I wanted to have two things:
 1. A simple way to load balance traffic between bare metal kubernetes cluster nodes
 1. A fun Go project to work on
 
-### Reverse Proxy
-
-http://localhost:8080
-
-### Dashboard
-
-http://localhost:8000
-
-
 ## Misc
 
 ### Tools used
@@ -108,6 +99,9 @@ http://localhost:8000
 
 ### TODO:
 
+- [ ] sticky n per client?
+- [ ] favicon (and on static pages)
+- [ ] build/test on push
 - [ ] docs
 - [ ] /metrics
 
