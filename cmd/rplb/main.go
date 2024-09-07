@@ -24,7 +24,7 @@ func main() {
 
 	frontends, err := frontend.NewFrontends(*fe)
 	if err != nil {
-		log.Fatalf("Create frontends: %s", err)
+		log.Fatalf("NewFrontends: %s", err)
 	}
 
 	bp, err := backend.NewBackendPool(*be)
