@@ -9,11 +9,11 @@ import (
 
 const (
 	stickyBpName string = Sticky
-	stickyB1     string = "http://b:1234"
-	stickyB2     string = "http://b:1235"
-	stickyB3     string = "http://b:1236"
-	stickyC1     string = "10.0.0.1:1234"
-	stickyC2     string = "10.0.0.2:1235"
+	stickyB1     string = "http://a:1234"
+	stickyB2     string = "http://b:1234"
+	stickyB3     string = "http://c:1234"
+	stickyC1     string = "192.168.0.10:1234"
+	stickyC2     string = "192.168.0.11:1234"
 )
 
 func TestStickySequence(t *testing.T) {

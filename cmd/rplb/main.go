@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	fe = flag.String("f", "", "Comma-separated list of Frontend Hostname and BackendPool Name pairs. (example \"frontend.local,backend\")")
-	be = flag.String("b", "", "Comma-separated list of BackendPool Name and URL pairs. (example \"backend,10.0.0.1:1234\")")
+	fe = flag.String("f", "", "Comma-separated list of Frontend Hostname and BackendPool Name pairs. (example \"frontend.example.com,backend\")")
+	be = flag.String("b", "", "Comma-separated list of BackendPool Name and URL pairs. (example \"backend,http://10.0.0.1:1234\")")
 	a  = flag.String("a", loadbalancing.Sticky, fmt.Sprintf("Algorithm used for loadbalancing. Choose from: %s, %s, %s or %s.", loadbalancing.First, loadbalancing.Random, loadbalancing.RoundRobin, loadbalancing.Sticky))
 )
 

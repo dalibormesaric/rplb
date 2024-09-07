@@ -9,9 +9,9 @@ import (
 
 const (
 	roundRobinBpName string = RoundRobin
-	roundRobinB1     string = "http://b:1234"
-	roundRobinB2     string = "http://b:1235"
-	roundRobinB3     string = "http://b:1236"
+	roundRobinB1     string = "http://a:1234"
+	roundRobinB2     string = "http://b:1234"
+	roundRobinB3     string = "http://c:1234"
 )
 
 func TestRoundRobinSequence(t *testing.T) {

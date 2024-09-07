@@ -9,9 +9,9 @@ import (
 
 const (
 	firstBpName string = First
-	firstB1     string = "http://b:1234"
-	firstB2     string = "http://b:1235"
-	firstB3     string = "http://b:1236"
+	firstB1     string = "http://a:1234"
+	firstB2     string = "http://b:1234"
+	firstB3     string = "http://c:1234"
 )
 
 func TestFirstSequence(t *testing.T) {

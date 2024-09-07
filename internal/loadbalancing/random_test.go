@@ -9,9 +9,9 @@ import (
 
 const (
 	randomBpName string = Random
-	randomB1     string = "http://b:1234"
-	randomB2     string = "http://b:1235"
-	randomB3     string = "http://b:1236"
+	randomB1     string = "http://a:1234"
+	randomB2     string = "http://b:1234"
+	randomB3     string = "http://c:1234"
 )
 
 func TestRandomSequence(t *testing.T) {
