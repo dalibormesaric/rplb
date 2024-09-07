@@ -22,7 +22,7 @@ var (
 func main() {
 	flag.Parse()
 
-	frontends, err := frontend.CreateFrontends(*fe)
+	frontends, err := frontend.NewFrontends(*fe)
 	if err != nil {
 		log.Fatalf("Create frontends: %s", err)
 	}

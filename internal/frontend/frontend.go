@@ -16,8 +16,8 @@ type Frontend struct {
 	hits        atomic.Uint64
 }
 
-// CreateFrontends parses url name pairs and returns created Frontends.
-func CreateFrontends(urlNamePair string) (Frontends, error) {
+// NewFrontends parses url name pairs and returns Frontends.
+func NewFrontends(urlNamePair string) (Frontends, error) {
 	frontends := make(Frontends)
 
 	if strings.TrimSpace(urlNamePair) == "" {

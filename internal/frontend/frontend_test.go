@@ -15,7 +15,7 @@ func TestCreateFrontends(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result, _ := CreateFrontends(test.urlNamePair)
+		result, _ := NewFrontends(test.urlNamePair)
 		f := result.Get(test.key)
 		if f.BackendName != test.values.BackendName {
 			t.Errorf("wrong backend name: want (%s) got (%s)\n", test.values.BackendName, f.BackendName)
@@ -39,7 +39,7 @@ func TestCreateFrontendsErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		_, err := CreateFrontends(test.urlNamePair)
+		_, err := NewFrontends(test.urlNamePair)
 		if test.err != nil && err.Error() != test.err.Error() {
 			t.Errorf("Want: %s\nGot: %s\n", test.err.Error(), err.Error())
 		}

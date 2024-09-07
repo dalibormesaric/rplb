@@ -38,7 +38,7 @@ func TestReverseProxyWithNoFrontends(t *testing.T) {
 }
 
 func TestReverseProxyWithFrontends(t *testing.T) {
-	f, err := frontend.CreateFrontends("127.0.0.1,b")
+	f, err := frontend.NewFrontends("127.0.0.1,b")
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,7 +70,7 @@ func TestReverseProxyWithFrontends(t *testing.T) {
 }
 
 func TestReverseProxyWithFrontendsAndWithBackends(t *testing.T) {
-	f, err := frontend.CreateFrontends("127.0.0.1,b")
+	f, err := frontend.NewFrontends("127.0.0.1,b")
 	if err != nil {
 		t.Error(err)
 	}
