@@ -11,7 +11,7 @@ Load balance requests based on configured hostname accross configured backends. 
    - Round Robin
    - Random
    - First
-- 🛟 Resiliency
+- 💪 Resiliency
    - Retries
 - 📈 Dashboard
    - Monitor
@@ -108,7 +108,8 @@ With this project I wanted to have two things:
 ### TODO:
 
 - [ ] sticky n per client?
-- [ ] favicon (and on static pages)
+- [ ] algorithm state expiration?
+- [ ] favicon on static pages?
 - [ ] build/test on push
 - [ ] docs
 - [ ] /metrics

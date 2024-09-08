@@ -14,7 +14,7 @@ import (
 //go:embed templates/*.html
 var content embed.FS
 
-//go:embed assets/*.css assets/*.js
+//go:embed assets/*.css assets/*.js assets/*.ico
 var assets embed.FS
 
 var (
@@ -30,6 +30,11 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messag
 	http.Handle("/assets/", http.StripPrefix("/", http.FileServer(http.FS(assets))))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RequestURI() == "/favicon.ico" {
+			http.ServeFileFS(w, r, assets, "assets/favicon.ico")
+			return
+		}
+
 		http.Redirect(w, r, "/monitor", http.StatusPermanentRedirect)
 	})
 
