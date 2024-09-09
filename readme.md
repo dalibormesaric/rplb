@@ -47,6 +47,18 @@ To run custom docker images, use [Advanced SSH & Web Terminal](https://github.co
 
 To resolve custom domains on the same IP where Home Assistant is running, use [AdGuard Home](https://www.home-assistant.io/integrations/adguard/) and its feature DNS rewrites.
 
+### CLI
+
+``` txt
+Usage of rplb:
+  -a string
+        Algorithm used for loadbalancing. Choose from: first, random, roundrobin or sticky. (default "sticky")
+  -b string
+        Comma-separated list of BackendPool Name and URL pairs. (example "backend,http://10.0.0.1:1234")
+  -f string
+        Comma-separated list of Frontend Hostname and BackendPool Name pairs. (example "frontend.example.com,backend")
+```
+
 ## Try it out
 
 There is an `/example` folder in this repository containing already configured `RPLB` with tree backends. You can try it our by running:
@@ -107,6 +119,8 @@ With this project I wanted to have two things:
 
 ### TODO:
 
+- [ ] fix monitor uvavailable initial label
+- [ ] least-loaded round robin
 - [ ] sticky n per client?
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
