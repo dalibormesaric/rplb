@@ -7,7 +7,7 @@ Load balance requests based on configured hostname accross configured backends. 
 ## Features
 
 - ⚙️ Simple configuration
-   - In-line 
+   - In-line
 - ⚡️ Static Load Balancing
    - Sticky Round Robin
    - Round Robin
@@ -126,7 +126,6 @@ With this project I wanted to have two things:
 - [ ] sticky n per client?
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
-- [ ] build/test on push
 - [ ] docs
 - [ ] /metrics
 
