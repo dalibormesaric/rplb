@@ -121,13 +121,13 @@ With this project I wanted to have two things:
 
 ### TODO:
 
+- [ ] docs
 - [ ] fix monitor uvavailable initial label
 - [ ] least-loaded round robin
 - [ ] sticky n per client?
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
-- [ ] docs
-- [ ] /metrics
+- [ ] /metrics?
 
 ### Some ideas
 
