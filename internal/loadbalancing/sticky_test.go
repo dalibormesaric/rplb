@@ -58,22 +58,22 @@ func TestStickyGetNil(t *testing.T) {
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{&backend.Backend{}},
+			bs:         []*backend.Backend{{}},
 			remoteAddr: "",
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{&backend.Backend{}},
+			bs:         []*backend.Backend{{}},
 			remoteAddr: "wrong",
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{&backend.Backend{}},
+			bs:         []*backend.Backend{{}},
 			remoteAddr: "1234",
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{&backend.Backend{}},
+			bs:         []*backend.Backend{{}},
 			remoteAddr: "10.0.0.1",
 			expected:   nil,
 		},
