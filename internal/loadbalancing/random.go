@@ -11,7 +11,7 @@ type random struct {
 
 var _ Algorithm = (*random)(nil)
 
-func (_ *random) Get(_ string, backends []*backend.Backend) *backend.Backend {
+func (*random) Get(_ string, backends []*backend.Backend) *backend.Backend {
 	n := len(backends)
 	if n == 0 {
 		return nil

@@ -42,6 +42,6 @@ func NewAlgorithm(name string) (algo Algorithm, err error) {
 	case Random:
 		return &random{}, nil
 	default:
-		return nil, fmt.Errorf("unknown algorithm type (%s)\n", name)
+		return nil, fmt.Errorf("unknown algorithm type (%s)", name)
 	}
 }
