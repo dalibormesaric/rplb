@@ -35,7 +35,7 @@ func TestNewAlgorithm(t *testing.T) {
 		{
 			name:     "foo",
 			expected: "",
-			err:      fmt.Errorf("unknown algorithm type (foo)\n"),
+			err:      fmt.Errorf("unknown algorithm type (foo)"),
 		},
 	}
 
