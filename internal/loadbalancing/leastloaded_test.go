@@ -15,46 +15,61 @@ const (
 )
 
 func TestGet2(t *testing.T) {
-	bs := func() []*backend.Backend {
+	bsf := func() []*backend.Backend {
 		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", leastLoadedBpName, leastLoadedB1, leastLoadedBpName, leastLoadedB2, leastLoadedBpName, leastLoadedB3))
 		return bp[leastLoadedBpName]
-	}()
+	}
 
-	leastloaded := &leastLoaded{state: &leastLoadedState{
-		loadForBackend:    make(map[string]int),
-		roundRobinForLoad: make(map[int]int),
-	}}
-	leastloaded.state.loadForBackend[bs[0].Name] = 2
-	leastloaded.state.loadForBackend[bs[1].Name] = 1
-	leastloaded.state.loadForBackend[bs[2].Name] = 1
+	var tests = []struct {
+		callbackNever    bool
+		loadForBackend   []int
+		expectedBackends []string
+		expectedStates   [][]int
+	}{
+		{
+			callbackNever:    true,
+			loadForBackend:   []int{2, 1, 1},
+			expectedBackends: []string{leastLoadedB2, leastLoadedB3, leastLoadedB1, leastLoadedB3, leastLoadedB2},
+			expectedStates:   [][]int{{2, 2, 1}, {2, 2, 2}, {3, 2, 2}, {3, 2, 3}, {3, 3, 3}},
+		},
+		{
+			callbackNever:    false,
+			loadForBackend:   []int{0, 0, 0},
+			expectedBackends: []string{leastLoadedB1, leastLoadedB2, leastLoadedB3, leastLoadedB1, leastLoadedB2},
+			expectedStates:   [][]int{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 0}, {0, 1, 0}},
+		},
+		{
+			callbackNever:    false,
+			loadForBackend:   []int{2, 1, 1},
+			expectedBackends: []string{leastLoadedB2, leastLoadedB3, leastLoadedB2, leastLoadedB3, leastLoadedB2},
+			expectedStates:   [][]int{{2, 2, 1}, {2, 1, 2}, {2, 2, 1}, {2, 1, 2}, {2, 2, 1}},
+		},
+	}
 
-	fmt.Printf("%s %d\n", bs[0].Name, leastloaded.state.loadForBackend[bs[0].Name])
-	fmt.Printf("%s %d\n", bs[1].Name, leastloaded.state.loadForBackend[bs[1].Name])
-	fmt.Printf("%s %d\n", bs[2].Name, leastloaded.state.loadForBackend[bs[2].Name])
+	for _, test := range tests {
+		bs := bsf()
+		leastloaded := &leastLoaded{state: &leastLoadedState{
+			loadForBackend:    make(map[string]int),
+			roundRobinForLoad: make(map[int]int),
+		}}
+		for j := range len(test.loadForBackend) {
+			leastloaded.state.loadForBackend[bs[j].Name] = test.loadForBackend[j]
+		}
 
-	b1, f1 := leastloaded.Get2("", bs)
-	fmt.Printf("BACKEND %s\n", b1.Name)
+		for i, expectedBackend := range test.expectedBackends {
+			b, f := leastloaded.Get2("", bs)
+			if b.URL.String() != expectedBackend {
+				t.Errorf("Wrong backend at step (%d): want (%s) got (%s)\n", i, expectedBackend, b.URL.String())
+			}
+			for j := range len(test.loadForBackend) {
+				if test.expectedStates[i][j] != leastloaded.state.loadForBackend[bs[j].Name] {
+					t.Errorf("Wrong loadForBackend[(%d)] at step (%d): want (%d) got (%d)\n", j, i, test.expectedStates[i][j], leastloaded.state.loadForBackend[bs[j].Name])
+				}
+			}
 
-	fmt.Printf("%s %d\n", bs[0].Name, leastloaded.state.loadForBackend[bs[0].Name])
-	fmt.Printf("%s %d\n", bs[1].Name, leastloaded.state.loadForBackend[bs[1].Name])
-	fmt.Printf("%s %d\n", bs[2].Name, leastloaded.state.loadForBackend[bs[2].Name])
-
-	b2, f2 := leastloaded.Get2("", bs)
-	fmt.Printf("BACKEND %s\n", b2.Name)
-
-	fmt.Printf("%s %d\n", bs[0].Name, leastloaded.state.loadForBackend[bs[0].Name])
-	fmt.Printf("%s %d\n", bs[1].Name, leastloaded.state.loadForBackend[bs[1].Name])
-	fmt.Printf("%s %d\n", bs[2].Name, leastloaded.state.loadForBackend[bs[2].Name])
-
-	f1()
-	fmt.Printf("%s %d\n", bs[0].Name, leastloaded.state.loadForBackend[bs[0].Name])
-	fmt.Printf("%s %d\n", bs[1].Name, leastloaded.state.loadForBackend[bs[1].Name])
-	fmt.Printf("%s %d\n", bs[2].Name, leastloaded.state.loadForBackend[bs[2].Name])
-
-	f2()
-	fmt.Printf("%s %d\n", bs[0].Name, leastloaded.state.loadForBackend[bs[0].Name])
-	fmt.Printf("%s %d\n", bs[1].Name, leastloaded.state.loadForBackend[bs[1].Name])
-	fmt.Printf("%s %d\n", bs[2].Name, leastloaded.state.loadForBackend[bs[2].Name])
-
-	t.Error("error")
+			if !test.callbackNever {
+				f()
+			}
+		}
+	}
 }

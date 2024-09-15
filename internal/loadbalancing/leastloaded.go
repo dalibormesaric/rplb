@@ -27,7 +27,8 @@ func (algo *leastLoaded) Get(_ string, backends []*backend.Backend) *backend.Bac
 	return nil
 }
 
-func (algo *leastLoaded) ensureBackendInState(backends []*backend.Backend) {
+func (algo *leastLoaded) ensureLoadForBackendInState(backends []*backend.Backend) {
+	// TODO: to avoid calling this on every request, pass backends when calling NewAlgorithm
 	for _, b := range backends {
 		_, ok := algo.state.loadForBackend[b.Name]
 		if !ok {
@@ -69,7 +70,7 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 	}
 
 	if ba == nil {
-		algo.state.roundRobinForLoad[minLoadForBackend] = 0
+		algo.state.roundRobinForLoad[minLoadForBackend] = 1
 		ba = firstBackend
 	}
 
@@ -80,36 +81,20 @@ func (algo *leastLoaded) Get2(_ string, backends []*backend.Backend) (b *backend
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
-	// ensure all backends are in state with default n = 0
-	algo.ensureBackendInState(backends)
+	// ensure all backends are in state with initial load n = 0
+	algo.ensureLoadForBackendInState(backends)
 
 	// go through all live backends and find all with least n
 	// and do round robin for that n
-
 	b = algo.getLeastLoad(backends)
-	// roundRobinForRequests := make(map[int]int)
 
-	// fmt.Printf("%s %d\n", b.Name, algo.state.loadForBackend[b.Name])
 	algo.state.loadForBackend[b.Name]++
-	// fmt.Printf("%s %d\n", b.Name, algo.state.loadForBackend[b.Name])
-	// find backend with least load (number of requests)
-	// t := make(map[string]int)
-
-	// max := 999
-	// for k, v := range t {
-	// 	if v < max {
-	// 		max = v
-	// 	}
-	// }
-
-	// backend.Name
 
 	afterBackendResponse = func(name string) func() {
 		return func() {
 			algo.state.mu.Lock()
 			defer algo.state.mu.Unlock()
 			algo.state.loadForBackend[name]--
-			// fmt.Printf("%s %d\n", name, algo.state.loadForBackend[name])
 		}
 	}(b.Name)
 
