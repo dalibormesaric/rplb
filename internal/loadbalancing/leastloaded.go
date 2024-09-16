@@ -11,7 +11,8 @@ type leastLoaded struct {
 }
 
 type leastLoadedState struct {
-	mu                sync.Mutex
+	mu sync.Mutex
+	// TODO: round robin per backend pool?
 	roundRobinForLoad map[int]int
 	loadForBackend    map[string]int
 	// track number of ongoing requests per backend
@@ -19,12 +20,12 @@ type leastLoadedState struct {
 
 var _ (Algorithm) = (*leastLoaded)(nil)
 
-func (algo *leastLoaded) Get(_ string, backends []*backend.Backend) *backend.Backend {
+func (algo *leastLoaded) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, afterBackendResponse func()) {
 	// find backend with least load (number of requests)
 	// increase number of requests for backend
 	// call proxy
 	// decrease number of requests for backend
-	return nil
+	return nil, nil
 }
 
 func (algo *leastLoaded) ensureLoadForBackendInState(backends []*backend.Backend) {

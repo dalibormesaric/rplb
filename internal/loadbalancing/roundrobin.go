@@ -17,13 +17,13 @@ type roundRobinState struct {
 
 var _ Algorithm = (*roundRobin)(nil)
 
-func (algo *roundRobin) Get(_ string, backends []*backend.Backend) *backend.Backend {
+func (algo *roundRobin) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
 	n := len(backends)
 	if n == 0 {
-		return nil
+		return nil, nil
 	}
 
 	if algo.state.n >= n {
@@ -31,5 +31,5 @@ func (algo *roundRobin) Get(_ string, backends []*backend.Backend) *backend.Back
 	}
 	b := backends[algo.state.n]
 	algo.state.n++
-	return b
+	return b, nil
 }

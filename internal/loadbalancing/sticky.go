@@ -19,18 +19,18 @@ type stickyState struct {
 
 var _ Algorithm = (*sticky)(nil)
 
-func (algo *sticky) Get(remoteAddr string, backends []*backend.Backend) *backend.Backend {
+func (algo *sticky) Get(remoteAddr string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
 	n := len(backends)
 	if n == 0 {
-		return nil
+		return nil, nil
 	}
 
 	host, _, err := net.SplitHostPort(remoteAddr)
 	if err != nil {
-		return nil
+		return nil, nil
 	}
 	clientIp := host
 
@@ -38,7 +38,7 @@ func (algo *sticky) Get(remoteAddr string, backends []*backend.Backend) *backend
 	if ok {
 		for _, b := range backends {
 			if backendHost == b.URL.Host {
-				return b
+				return b, nil
 			}
 		}
 	} else {
@@ -50,5 +50,5 @@ func (algo *sticky) Get(remoteAddr string, backends []*backend.Backend) *backend
 	}
 	b := backends[algo.state.n]
 	algo.state.clientIpBackendHost[clientIp] = b.URL.Host
-	return b
+	return b, nil
 }

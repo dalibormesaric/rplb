@@ -66,7 +66,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	retryAmount := 5
 	for range retryAmount {
 		liveBackends := backend.GetLive(rp.bp[f.BackendName])
-		liveBackend := rp.loadbalancing.Get(r.RemoteAddr, liveBackends)
+		liveBackend, afterBackendResponse := rp.loadbalancing.Get(r.RemoteAddr, liveBackends)
 		if liveBackend == nil {
 			log.Printf("No live backends for host (%s)\n", host)
 			http.ServeFileFS(w, r, static, "static/503.html")
@@ -74,6 +74,9 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		}
 		// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
 		liveBackend.Proxy.ServeHTTP(w, r)
+		if afterBackendResponse != nil {
+			afterBackendResponse()
+		}
 		rplbBackendStatusCode, _ := strconv.Atoi(w.Header().Get(backend.RPLBBackendStatusCode))
 		w.Header().Del(backend.RPLBBackendStatusCode)
 

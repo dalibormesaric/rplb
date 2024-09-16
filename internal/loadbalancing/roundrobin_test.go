@@ -30,7 +30,7 @@ func TestRoundRobinSequence(t *testing.T) {
 
 	roundRobin, _ := NewAlgorithm(RoundRobin)
 	for _, expected := range test.expected {
-		b := roundRobin.Get("", test.bs)
+		b, _ := roundRobin.Get("", test.bs)
 		if b.URL.String() != expected {
 			t.Errorf("wrong backend: want (%s) got (%s)", expected, b.URL.String())
 		}
@@ -54,7 +54,7 @@ func TestRoundRobinGetNil(t *testing.T) {
 
 	for _, test := range tests {
 		roundRobin, _ := NewAlgorithm(RoundRobin)
-		b := roundRobin.Get("", test.bs)
+		b, _ := roundRobin.Get("", test.bs)
 		if b != test.expected {
 			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 		}

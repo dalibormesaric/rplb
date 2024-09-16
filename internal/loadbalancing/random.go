@@ -11,13 +11,13 @@ type random struct {
 
 var _ Algorithm = (*random)(nil)
 
-func (*random) Get(_ string, backends []*backend.Backend) *backend.Backend {
+func (*random) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
 	n := len(backends)
 	if n == 0 {
-		return nil
+		return nil, nil
 	}
 
 	randBackend := rand.IntN(n)
 	liveBackend := backends[randBackend]
-	return liveBackend
+	return liveBackend, nil
 }
