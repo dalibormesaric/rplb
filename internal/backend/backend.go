@@ -78,7 +78,7 @@ func NewBackendPool(nameUrlPairs string) (BackendPool, error) {
 			} else {
 				for _, existingBackend := range bp[k] {
 					if existingBackend.URL.Host == b.URL.Host {
-						return nil, fmt.Errorf("url (%s) already exist in backend (%s)", backendUrl, k)
+						return nil, fmt.Errorf("url (%s) already exist in backend pool (%s)", backendUrl, k)
 					}
 				}
 				bp[k] = append(bp[k], b)
@@ -90,13 +90,13 @@ func NewBackendPool(nameUrlPairs string) (BackendPool, error) {
 	return bp, nil
 }
 
-func createBackend(key, urlString string) (*Backend, error) {
+func createBackend(poolName, urlString string) (*Backend, error) {
 	urlParsed, err := url.Parse(urlString)
 	if err != nil {
 		return nil, err
 	}
 	if urlParsed.Host == "" {
-		return nil, fmt.Errorf("empty host for url (%s) in backend (%s)", urlString, key)
+		return nil, fmt.Errorf("empty host for url (%s) in backend pool (%s)", urlString, poolName)
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(urlParsed)
@@ -111,7 +111,7 @@ func createBackend(key, urlString string) (*Backend, error) {
 	}
 
 	return &Backend{
-		Name:          stripString(fmt.Sprintf("%s%s", key, urlString)),
+		Name:          stripString(fmt.Sprintf("%s%s", poolName, urlParsed)),
 		URL:           urlParsed,
 		Proxy:         proxy,
 		live:          false,
@@ -146,6 +146,10 @@ func GetLive(backends []*Backend) (liveBackends []*Backend) {
 		}
 	}
 	return
+}
+
+func (b *Backend) GetKey() string {
+	return strings.TrimSuffix(b.Name, stripString(b.URL.String()))
 }
 
 // GetHits returns number of hits for Backend.

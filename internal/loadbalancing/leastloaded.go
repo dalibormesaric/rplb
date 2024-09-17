@@ -21,11 +21,31 @@ type leastLoadedState struct {
 var _ (Algorithm) = (*leastLoaded)(nil)
 
 func (algo *leastLoaded) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, afterBackendResponse func()) {
+	algo.state.mu.Lock()
+	defer algo.state.mu.Unlock()
+
+	// ensure all backends are in state with initial load n = 0
+	algo.ensureLoadForBackendInState(backends)
+
+	// go through all live backends and find all with least n
+	// and do round robin for that n
+	backend = algo.getLeastLoad(backends)
+
+	algo.state.loadForBackend[backend.Name]++
+
+	afterBackendResponse = func(name string) func() {
+		return func() {
+			algo.state.mu.Lock()
+			defer algo.state.mu.Unlock()
+			algo.state.loadForBackend[name]--
+		}
+	}(backend.Name)
+
+	return backend, afterBackendResponse
 	// find backend with least load (number of requests)
 	// increase number of requests for backend
 	// call proxy
 	// decrease number of requests for backend
-	return nil, nil
 }
 
 func (algo *leastLoaded) ensureLoadForBackendInState(backends []*backend.Backend) {
@@ -76,28 +96,4 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 	}
 
 	return ba
-}
-
-func (algo *leastLoaded) Get2(_ string, backends []*backend.Backend) (b *backend.Backend, afterBackendResponse func()) {
-	algo.state.mu.Lock()
-	defer algo.state.mu.Unlock()
-
-	// ensure all backends are in state with initial load n = 0
-	algo.ensureLoadForBackendInState(backends)
-
-	// go through all live backends and find all with least n
-	// and do round robin for that n
-	b = algo.getLeastLoad(backends)
-
-	algo.state.loadForBackend[b.Name]++
-
-	afterBackendResponse = func(name string) func() {
-		return func() {
-			algo.state.mu.Lock()
-			defer algo.state.mu.Unlock()
-			algo.state.loadForBackend[name]--
-		}
-	}(b.Name)
-
-	return b, afterBackendResponse
 }

@@ -14,7 +14,7 @@ const (
 	leastLoadedB3     string = "http://c:1234"
 )
 
-func TestGet2(t *testing.T) {
+func TestGet(t *testing.T) {
 	bsf := func() []*backend.Backend {
 		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", leastLoadedBpName, leastLoadedB1, leastLoadedBpName, leastLoadedB2, leastLoadedBpName, leastLoadedB3))
 		return bp[leastLoadedBpName]
@@ -57,7 +57,7 @@ func TestGet2(t *testing.T) {
 		}
 
 		for i, expectedBackend := range test.expectedBackends {
-			b, f := leastloaded.Get2("", bs)
+			b, f := leastloaded.Get("", bs)
 			if b.URL.String() != expectedBackend {
 				t.Errorf("Wrong backend at step (%d): want (%s) got (%s)\n", i, expectedBackend, b.URL.String())
 			}
