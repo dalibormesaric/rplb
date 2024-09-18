@@ -111,7 +111,7 @@ func createBackend(poolName, urlString string) (*Backend, error) {
 	}
 
 	return &Backend{
-		Name:          stripString(fmt.Sprintf("%s%s", poolName, urlParsed)),
+		Name:          getName(poolName, urlParsed),
 		URL:           urlParsed,
 		Proxy:         proxy,
 		live:          false,
@@ -148,7 +148,11 @@ func GetLive(backends []*Backend) (liveBackends []*Backend) {
 	return
 }
 
-func (b *Backend) GetKey() string {
+func getName(poolName string, url *url.URL) string {
+	return stripString(fmt.Sprintf("%s%s", poolName, url.String()))
+}
+
+func (b *Backend) GetPoolName() string {
 	return strings.TrimSuffix(b.Name, stripString(b.URL.String()))
 }
 
