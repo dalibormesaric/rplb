@@ -1,6 +1,7 @@
 package loadbalancing
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -13,8 +14,8 @@ type leastLoaded struct {
 type leastLoadedState struct {
 	mu sync.Mutex
 	// TODO: round robin per backend pool?
-	roundRobinForLoad map[int]int
-	loadForBackend    map[string]int
+	roundRobinForPoolLoad map[string]int
+	loadForBackend        map[string]int
 	// track number of ongoing requests per backend
 }
 
@@ -68,9 +69,9 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 		}
 	}
 
-	roundRobinForLoad, ok := algo.state.roundRobinForLoad[minLoadForBackend]
+	roundRobinForLoad, ok := algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)]
 	if !ok {
-		roundRobinForLoad, algo.state.roundRobinForLoad[minLoadForBackend] = 0, 0
+		roundRobinForLoad, algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)] = 0, 0
 	}
 
 	iForLoad := 0
@@ -82,7 +83,7 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 			}
 			if iForLoad == roundRobinForLoad {
 				ba = b
-				algo.state.roundRobinForLoad[minLoadForBackend]++
+				algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)]++
 				break
 			} else {
 				iForLoad++
@@ -91,9 +92,13 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 	}
 
 	if ba == nil {
-		algo.state.roundRobinForLoad[minLoadForBackend] = 1
+		algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)] = 1
 		ba = firstBackend
 	}
 
 	return ba
+}
+
+func getPoolLoad(load int) string {
+	return fmt.Sprintf("%d", load)
 }

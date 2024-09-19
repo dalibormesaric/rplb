@@ -49,8 +49,8 @@ func TestGet(t *testing.T) {
 	for _, test := range tests {
 		bs := bsf()
 		leastloaded := &leastLoaded{state: &leastLoadedState{
-			loadForBackend:    make(map[string]int),
-			roundRobinForLoad: make(map[int]int),
+			loadForBackend:        make(map[string]int),
+			roundRobinForPoolLoad: make(map[string]int),
 		}}
 		for j := range len(test.loadForBackend) {
 			leastloaded.state.loadForBackend[bs[j].Name] = test.loadForBackend[j]
