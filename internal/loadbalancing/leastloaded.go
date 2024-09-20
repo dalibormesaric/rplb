@@ -12,8 +12,7 @@ type leastLoaded struct {
 }
 
 type leastLoadedState struct {
-	mu sync.Mutex
-	// TODO: round robin per backend pool?
+	mu                    sync.Mutex
 	roundRobinForPoolLoad map[string]int
 	loadForBackend        map[string]int
 	// track number of ongoing requests per backend
@@ -69,9 +68,9 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 		}
 	}
 
-	roundRobinForLoad, ok := algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)]
+	roundRobinForLoad, ok := algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)]
 	if !ok {
-		roundRobinForLoad, algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)] = 0, 0
+		roundRobinForLoad, algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)] = 0, 0
 	}
 
 	iForLoad := 0
@@ -83,7 +82,7 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 			}
 			if iForLoad == roundRobinForLoad {
 				ba = b
-				algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)]++
+				algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)]++
 				break
 			} else {
 				iForLoad++
@@ -92,13 +91,13 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 	}
 
 	if ba == nil {
-		algo.state.roundRobinForPoolLoad[getPoolLoad(minLoadForBackend)] = 1
+		algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)] = 1
 		ba = firstBackend
 	}
 
 	return ba
 }
 
-func getPoolLoad(load int) string {
-	return fmt.Sprintf("%d", load)
+func getPoolLoad(backend *backend.Backend, load int) string {
+	return fmt.Sprintf("%s%d", backend.GetPoolName(), load)
 }
