@@ -12,9 +12,10 @@ type sticky struct {
 }
 
 type stickyState struct {
-	mu                  sync.Mutex
-	clientIpBackendHost map[string]string
-	n                   int
+	mu                         sync.Mutex
+	backendHostForPoolClientIp map[string]string
+	// keeps track of round robin per pool
+	nForPool map[string]int
 }
 
 var _ Algorithm = (*sticky)(nil)
@@ -23,32 +24,39 @@ func (algo *sticky) GetNext(remoteAddr string, backends []*backend.Backend) (bac
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
-	n := len(backends)
-	if n == 0 {
+	l := len(backends)
+	if l == 0 {
 		return nil, nil
 	}
 
-	host, _, err := net.SplitHostPort(remoteAddr)
+	clientIp, _, err := net.SplitHostPort(remoteAddr)
 	if err != nil {
 		return nil, nil
 	}
-	clientIp := host
 
-	backendHost, ok := algo.state.clientIpBackendHost[clientIp]
+	poolName := backends[0].GetPoolName()
+
+	backendHost, ok := algo.state.backendHostForPoolClientIp[getPoolClientIp(poolName, clientIp)]
 	if ok {
 		for _, b := range backends {
 			if backendHost == b.URL.Host {
 				return b, nil
 			}
 		}
-	} else {
-		defer func() { algo.state.n++ }()
 	}
+	n := algo.state.nForPool[poolName]
 
-	if algo.state.n >= n {
-		algo.state.n = 0
+	// if current round robin target is larger then number of backends
+	if n >= l {
+		// we start from beginning
+		n = 0
 	}
-	b := backends[algo.state.n]
-	algo.state.clientIpBackendHost[clientIp] = b.URL.Host
+	b := backends[n]
+	algo.state.nForPool[poolName] = n + 1
+	algo.state.backendHostForPoolClientIp[getPoolClientIp(poolName, clientIp)] = b.URL.Host
 	return b, nil
+}
+
+func getPoolClientIp(pool, clientIp string) string {
+	return pool + clientIp
 }

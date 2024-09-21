@@ -8,35 +8,54 @@ import (
 )
 
 const (
-	stickyBpName string = Sticky
-	stickyB1     string = "http://a:1234"
-	stickyB2     string = "http://b:1234"
-	stickyB3     string = "http://c:1234"
-	stickyC1     string = "192.168.0.10:1234"
-	stickyC2     string = "192.168.0.11:1234"
+	stickyPool1 string = Sticky + "1"
+	stickyPool2 string = Sticky + "2"
+	stickyB1    string = "http://a:1234"
+	stickyB2    string = "http://b:1234"
+	stickyB3    string = "http://c:1234"
+	stickyB4    string = "http://d:1234"
+	stickyB5    string = "http://e:1234"
+	stickyC1    string = "192.168.0.10:1234"
+	stickyC2    string = "192.168.0.11:1234"
 )
 
 func TestStickySequence(t *testing.T) {
-	bs := func() []*backend.Backend {
-		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", stickyBpName, stickyB1, stickyBpName, stickyB2, stickyBpName, stickyB3))
-		return bp[stickyBpName]
-	}()
-
-	var test = struct {
-		bs       []*backend.Backend
-		clients  []string
-		expected []string
-	}{
-		bs:       bs,
-		clients:  []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
-		expected: []string{stickyB1, stickyB1, stickyB2, stickyB2, stickyB1, stickyB2, stickyB1},
+	getBackendsForPool := func(poolName string) []*backend.Backend {
+		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+			stickyPool1, stickyB1, stickyPool1, stickyB2, stickyPool1, stickyB3,
+			stickyPool2, stickyB4, stickyPool2, stickyB5))
+		return backendPool[poolName]
 	}
 
-	sticky, _ := NewAlgorithm(Sticky)
-	for i, expected := range test.expected {
-		b, _ := sticky.GetNext(test.clients[i], test.bs)
-		if b.URL.String() != expected {
-			t.Errorf("wrong backend for client (%s): want (%s) got (%s)", test.clients[i], expected, b.URL.String())
+	var tests = []struct {
+		otherPool []*backend.Backend
+		backends  []*backend.Backend
+		clients   []string
+		expected  []string
+	}{
+		{
+			otherPool: getBackendsForPool(stickyPool2),
+			backends:  getBackendsForPool(stickyPool1),
+			clients:   []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
+			expected:  []string{stickyB1, stickyB1, stickyB2, stickyB2, stickyB1, stickyB2, stickyB1},
+		},
+		{
+			otherPool: getBackendsForPool(stickyPool1),
+			backends:  getBackendsForPool(stickyPool2),
+			clients:   []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
+			expected:  []string{stickyB4, stickyB4, stickyB5, stickyB5, stickyB4, stickyB5, stickyB4},
+		},
+	}
+
+	for _, test := range tests {
+		sticky, _ := NewAlgorithm(Sticky)
+		for i, expected := range test.expected {
+			// trigger other pool backends to test that it does not affect testing backends
+			sticky.GetNext(test.clients[i], test.otherPool)
+			b, _ := sticky.GetNext(test.clients[i], test.backends)
+			if b.URL.String() != expected {
+				t.Errorf("wrong backend for client (%s): want (%s) got (%s)", test.clients[i], expected, b.URL.String())
+			}
 		}
 	}
 }

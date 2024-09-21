@@ -8,31 +8,43 @@ import (
 )
 
 const (
-	firstBpName string = First
-	firstB1     string = "http://a:1234"
-	firstB2     string = "http://b:1234"
-	firstB3     string = "http://c:1234"
+	firstPool1 string = First + "1"
+	firstPool2 string = First + "2"
+	firstB1    string = "http://a:1234"
+	firstB2    string = "http://b:1234"
+	firstB3    string = "http://c:1234"
 )
 
 func TestFirstSequence(t *testing.T) {
-	bs := func() []*backend.Backend {
-		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", firstBpName, firstB1, firstBpName, firstB2, firstBpName, firstB3))
-		return bp[firstBpName]
-	}()
-
-	var test = struct {
-		bs       []*backend.Backend
-		expected []string
-	}{
-		bs:       bs,
-		expected: []string{firstB1, firstB1, firstB1, firstB1, firstB1, firstB1, firstB1},
+	getBackendsForPool := func(poolName string) []*backend.Backend {
+		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+			firstPool1, firstB1, firstPool1, firstB2, firstPool1, firstB3,
+			firstPool2, firstB2, firstPool2, firstB3))
+		return backendPool[poolName]
 	}
 
-	first, _ := NewAlgorithm(First)
-	for _, expected := range test.expected {
-		b, _ := first.GetNext("", test.bs)
-		if b.URL.String() != expected {
-			t.Errorf("wrong backend: want (%s) got (%s)", expected, b.URL.String())
+	var tests = []struct {
+		backends []*backend.Backend
+		expected []string
+	}{
+		{
+			backends: getBackendsForPool(firstPool1),
+			expected: []string{firstB1, firstB1, firstB1, firstB1, firstB1, firstB1, firstB1},
+		},
+
+		{
+			backends: getBackendsForPool(firstPool2),
+			expected: []string{firstB2, firstB2, firstB2, firstB2, firstB2, firstB2, firstB2},
+		},
+	}
+
+	for _, test := range tests {
+		first, _ := NewAlgorithm(First)
+		for _, expected := range test.expected {
+			b, _ := first.GetNext("", test.backends)
+			if b.URL.String() != expected {
+				t.Errorf("wrong backend: want (%s) got (%s)", expected, b.URL.String())
+			}
 		}
 	}
 }

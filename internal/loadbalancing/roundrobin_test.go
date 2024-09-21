@@ -17,30 +17,35 @@ const (
 
 func TestRoundRobinSequence(t *testing.T) {
 	getBackendsForPool := func(poolName string) []*backend.Backend {
-		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
 			roundRobinPool1, roundRobinB1, roundRobinPool1, roundRobinB2, roundRobinPool1, roundRobinB3,
 			roundRobinPool2, roundRobinB1, roundRobinPool2, roundRobinB2))
-		return bp[poolName]
+		return backendPool[poolName]
 	}
 
 	var tests = []struct {
-		bs       []*backend.Backend
-		expected []string
+		otherPool []*backend.Backend
+		backends  []*backend.Backend
+		expected  []string
 	}{
 		{
-			bs:       getBackendsForPool(roundRobinPool1),
-			expected: []string{roundRobinB1, roundRobinB2, roundRobinB3, roundRobinB1, roundRobinB2, roundRobinB3, roundRobinB1},
+			otherPool: getBackendsForPool(roundRobinPool2),
+			backends:  getBackendsForPool(roundRobinPool1),
+			expected:  []string{roundRobinB1, roundRobinB2, roundRobinB3, roundRobinB1, roundRobinB2, roundRobinB3, roundRobinB1},
 		},
 		{
-			bs:       getBackendsForPool(roundRobinPool2),
-			expected: []string{roundRobinB1, roundRobinB2, roundRobinB1, roundRobinB2, roundRobinB1},
+			otherPool: getBackendsForPool(roundRobinPool1),
+			backends:  getBackendsForPool(roundRobinPool2),
+			expected:  []string{roundRobinB1, roundRobinB2, roundRobinB1, roundRobinB2, roundRobinB1},
 		},
 	}
 
 	for _, test := range tests {
 		roundRobin, _ := NewAlgorithm(RoundRobin)
 		for _, expected := range test.expected {
-			b, _ := roundRobin.GetNext("", test.bs)
+			// trigger other pool backends to test that it does not affect testing backends
+			roundRobin.GetNext("", test.otherPool)
+			b, _ := roundRobin.GetNext("", test.backends)
 			if b.URL.String() != expected {
 				t.Errorf("wrong backend: want (%s) got (%s)", expected, b.URL.String())
 			}

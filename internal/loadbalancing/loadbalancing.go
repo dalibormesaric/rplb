@@ -30,7 +30,8 @@ func NewAlgorithm(name string) (algo Algorithm, err error) {
 	case Sticky:
 		return &sticky{
 			state: &stickyState{
-				clientIpBackendHost: make(map[string]string),
+				backendHostForPoolClientIp: make(map[string]string),
+				nForPool:                   make(map[string]int),
 			},
 		}, nil
 	case RoundRobin:
