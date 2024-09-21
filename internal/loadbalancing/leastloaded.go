@@ -20,9 +20,13 @@ type leastLoadedState struct {
 
 var _ (Algorithm) = (*leastLoaded)(nil)
 
-func (algo *leastLoaded) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, afterBackendResponse func()) {
+func (algo *leastLoaded) GetNext(_ string, backends []*backend.Backend) (backend *backend.Backend, afterBackendResponse func()) {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
+
+	if len(backends) == 0 {
+		return nil, nil
+	}
 
 	// ensure all backends are in state with initial load n = 0
 	algo.ensureLoadForBackendInState(backends)

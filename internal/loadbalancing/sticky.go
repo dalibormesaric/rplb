@@ -19,7 +19,7 @@ type stickyState struct {
 
 var _ Algorithm = (*sticky)(nil)
 
-func (algo *sticky) Get(remoteAddr string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
+func (algo *sticky) GetNext(remoteAddr string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 

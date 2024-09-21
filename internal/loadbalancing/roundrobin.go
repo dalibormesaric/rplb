@@ -18,7 +18,7 @@ type roundRobinState struct {
 
 var _ Algorithm = (*roundRobin)(nil)
 
-func (algo *roundRobin) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
+func (algo *roundRobin) GetNext(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 

@@ -9,7 +9,7 @@ type first struct {
 
 var _ Algorithm = (*first)(nil)
 
-func (*first) Get(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
+func (*first) GetNext(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
 	n := len(backends)
 	if n == 0 {
 		return nil, nil

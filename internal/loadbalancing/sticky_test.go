@@ -34,7 +34,7 @@ func TestStickySequence(t *testing.T) {
 
 	sticky, _ := NewAlgorithm(Sticky)
 	for i, expected := range test.expected {
-		b, _ := sticky.Get(test.clients[i], test.bs)
+		b, _ := sticky.GetNext(test.clients[i], test.bs)
 		if b.URL.String() != expected {
 			t.Errorf("wrong backend for client (%s): want (%s) got (%s)", test.clients[i], expected, b.URL.String())
 		}
@@ -81,7 +81,7 @@ func TestStickyGetNil(t *testing.T) {
 
 	for _, test := range tests {
 		sticky, _ := NewAlgorithm(Sticky)
-		b, _ := sticky.Get(test.remoteAddr, test.bs)
+		b, _ := sticky.GetNext(test.remoteAddr, test.bs)
 		if b != test.expected {
 			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 		}
