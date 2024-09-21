@@ -10,6 +10,7 @@ import (
 const (
 	stickyPool1 string = Sticky + "1"
 	stickyPool2 string = Sticky + "2"
+	stickyPool3 string = Sticky + "3"
 	stickyB1    string = "http://a:1234"
 	stickyB2    string = "http://b:1234"
 	stickyB3    string = "http://c:1234"
@@ -21,9 +22,10 @@ const (
 
 func TestStickySequence(t *testing.T) {
 	getBackendsForPool := func(poolName string) []*backend.Backend {
-		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
 			stickyPool1, stickyB1, stickyPool1, stickyB2, stickyPool1, stickyB3,
-			stickyPool2, stickyB4, stickyPool2, stickyB5))
+			stickyPool2, stickyB4, stickyPool2, stickyB5,
+			stickyPool3, stickyB1))
 		return backendPool[poolName]
 	}
 
@@ -45,6 +47,18 @@ func TestStickySequence(t *testing.T) {
 			clients:   []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
 			expected:  []string{stickyB4, stickyB4, stickyB5, stickyB5, stickyB4, stickyB5, stickyB4},
 		},
+		{
+			otherPool: getBackendsForPool(stickyPool1),
+			backends:  getBackendsForPool(stickyPool3),
+			clients:   []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
+			expected:  []string{stickyB1, stickyB1, stickyB1, stickyB1, stickyB1, stickyB1, stickyB1},
+		},
+		{
+			otherPool: getBackendsForPool(stickyPool2),
+			backends:  getBackendsForPool(stickyPool3),
+			clients:   []string{stickyC1, stickyC1, stickyC2, stickyC2, stickyC1, stickyC2, stickyC1},
+			expected:  []string{stickyB1, stickyB1, stickyB1, stickyB1, stickyB1, stickyB1, stickyB1},
+		},
 	}
 
 	for _, test := range tests {
@@ -62,37 +76,37 @@ func TestStickySequence(t *testing.T) {
 
 func TestStickyGetNil(t *testing.T) {
 	var tests = []struct {
-		bs         []*backend.Backend
+		backends   []*backend.Backend
 		remoteAddr string
 		expected   *backend.Backend
 	}{
 		{
-			bs:         nil,
+			backends:   nil,
 			remoteAddr: stickyC1,
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{},
+			backends:   []*backend.Backend{},
 			remoteAddr: stickyC1,
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{{}},
+			backends:   []*backend.Backend{{}},
 			remoteAddr: "",
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{{}},
+			backends:   []*backend.Backend{{}},
 			remoteAddr: "wrong",
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{{}},
+			backends:   []*backend.Backend{{}},
 			remoteAddr: "1234",
 			expected:   nil,
 		},
 		{
-			bs:         []*backend.Backend{{}},
+			backends:   []*backend.Backend{{}},
 			remoteAddr: "10.0.0.1",
 			expected:   nil,
 		},
@@ -100,7 +114,7 @@ func TestStickyGetNil(t *testing.T) {
 
 	for _, test := range tests {
 		sticky, _ := NewAlgorithm(Sticky)
-		b, _ := sticky.GetNext(test.remoteAddr, test.bs)
+		b, _ := sticky.GetNext(test.remoteAddr, test.backends)
 		if b != test.expected {
 			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 		}

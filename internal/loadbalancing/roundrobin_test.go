@@ -55,22 +55,22 @@ func TestRoundRobinSequence(t *testing.T) {
 
 func TestRoundRobinGetNil(t *testing.T) {
 	var tests = []struct {
-		bs       []*backend.Backend
+		backends []*backend.Backend
 		expected *backend.Backend
 	}{
 		{
-			bs:       nil,
+			backends: nil,
 			expected: nil,
 		},
 		{
-			bs:       []*backend.Backend{},
+			backends: []*backend.Backend{},
 			expected: nil,
 		},
 	}
 
 	for _, test := range tests {
 		roundRobin, _ := NewAlgorithm(RoundRobin)
-		b, _ := roundRobin.GetNext("", test.bs)
+		b, _ := roundRobin.GetNext("", test.backends)
 		if b != test.expected {
 			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 		}

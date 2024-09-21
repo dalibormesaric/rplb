@@ -12,12 +12,12 @@ type random struct {
 var _ Algorithm = (*random)(nil)
 
 func (*random) GetNext(_ string, backends []*backend.Backend) (backend *backend.Backend, _ func()) {
-	n := len(backends)
-	if n == 0 {
+	l := len(backends)
+	if l == 0 {
 		return nil, nil
 	}
 
-	randBackend := rand.IntN(n)
+	randBackend := rand.IntN(l)
 	liveBackend := backends[randBackend]
 	return liveBackend, nil
 }

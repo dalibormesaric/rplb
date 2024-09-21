@@ -51,22 +51,22 @@ func TestFirstSequence(t *testing.T) {
 
 func TestFirstGetNil(t *testing.T) {
 	var tests = []struct {
-		bs       []*backend.Backend
+		backends []*backend.Backend
 		expected *backend.Backend
 	}{
 		{
-			bs:       nil,
+			backends: nil,
 			expected: nil,
 		},
 		{
-			bs:       []*backend.Backend{},
+			backends: []*backend.Backend{},
 			expected: nil,
 		},
 	}
 
 	for _, test := range tests {
 		first, _ := NewAlgorithm(First)
-		b, _ := first.GetNext("", test.bs)
+		b, _ := first.GetNext("", test.backends)
 		if b != test.expected {
 			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 		}

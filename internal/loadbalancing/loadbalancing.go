@@ -15,7 +15,7 @@ const (
 )
 
 type Algorithm interface {
-	// GetNext returns next available backend according to the algorithm
+	// GetNext returns next available backend according to the algorithm with optional [afterBackendResponse] callback
 	GetNext(remoteAddr string, backends []*backend.Backend) (backend *backend.Backend, afterBackendResponse func())
 }
 
