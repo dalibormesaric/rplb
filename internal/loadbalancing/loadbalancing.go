@@ -35,7 +35,9 @@ func NewAlgorithm(name string) (algo Algorithm, err error) {
 		}, nil
 	case RoundRobin:
 		return &roundRobin{
-			state: &roundRobinState{},
+			state: &roundRobinState{
+				nForPool: make(map[string]int),
+			},
 		}, nil
 	case First:
 		return &first{}, nil

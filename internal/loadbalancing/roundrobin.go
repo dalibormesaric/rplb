@@ -12,7 +12,8 @@ type roundRobin struct {
 
 type roundRobinState struct {
 	mu sync.Mutex
-	n  int
+	// keeps track of round robin per pool
+	nForPool map[string]int
 }
 
 var _ Algorithm = (*roundRobin)(nil)
@@ -21,15 +22,20 @@ func (algo *roundRobin) Get(_ string, backends []*backend.Backend) (backend *bac
 	algo.state.mu.Lock()
 	defer algo.state.mu.Unlock()
 
-	n := len(backends)
-	if n == 0 {
+	l := len(backends)
+	if l == 0 {
 		return nil, nil
 	}
 
-	if algo.state.n >= n {
-		algo.state.n = 0
+	poolName := backends[0].GetPoolName()
+	n := algo.state.nForPool[poolName]
+
+	// if current round robin target is larger then number of backends
+	if n >= l {
+		// we start from beginning
+		n = 0
 	}
-	b := backends[algo.state.n]
-	algo.state.n++
+	b := backends[n]
+	algo.state.nForPool[poolName] = n + 1
 	return b, nil
 }
