@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=10000
+      - DELAY=200
     ports:
       - "8081:8888"
 
@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=10000
+      - DELAY=200
     ports:
       - "8082:8888"
 
@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=10000
+      - DELAY=200
     ports:
       - "8083:8888"
 
@@ -31,7 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=5000
+      - DELAY=100
     ports:
       - "8084:8888"
 
@@ -40,7 +40,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=5000
+      - DELAY=100
     ports:
       - "8085:8888"
 
@@ -49,7 +49,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=5000
+      - DELAY=100
     ports:
       - "8086:8888"
 
@@ -58,7 +58,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=1000
+      - DELAY=0
     ports:
       - "8087:8888"
 
@@ -67,7 +67,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=1000
+      - DELAY=0
     ports:
       - "8088:8888"
 
@@ -76,7 +76,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DELAY=1000
+      - DELAY=0
     ports:
       - "8089:8888"
 
