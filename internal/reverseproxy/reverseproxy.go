@@ -64,11 +64,16 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 
 	retryTimeout := 500 * time.Millisecond
 	retryAmount := 5
-	for range retryAmount {
+	for retryCurrent := range retryAmount {
 		liveBackends := backend.GetLive(rp.bp[f.BackendName])
 		liveBackend, afterBackendResponse := rp.loadbalancing.GetNext(r.RemoteAddr, liveBackends)
-		if liveBackend == nil {
-			log.Printf("No live backends for host (%s)\n", host)
+		if liveBackend == nil || retryCurrent+1 == retryAmount {
+			if liveBackend == nil {
+				log.Printf("No live backends for host (%s)\n", host)
+			}
+			if retryCurrent+1 == retryAmount {
+				log.Printf("Backends unavailable after retries.\n")
+			}
 			http.ServeFileFS(w, r, static, "static/503.html")
 			break
 		}
