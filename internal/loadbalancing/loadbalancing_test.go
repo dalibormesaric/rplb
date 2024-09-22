@@ -13,6 +13,11 @@ func TestNewAlgorithm(t *testing.T) {
 		err      error
 	}{
 		{
+			name:     LeastLoaded,
+			expected: reflect.TypeOf(&leastLoaded{}).String(),
+			err:      nil,
+		},
+		{
 			name:     Sticky,
 			expected: reflect.TypeOf(&sticky{}).String(),
 			err:      nil,

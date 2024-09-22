@@ -1,0 +1,105 @@
+services:
+  be1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=10000
+    ports:
+      - "8081:8888"
+
+  be2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=10000
+    ports:
+      - "8082:8888"
+
+  be3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=10000
+    ports:
+      - "8083:8888"
+
+  be4:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=5000
+    ports:
+      - "8084:8888"
+
+  be5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=5000
+    ports:
+      - "8085:8888"
+
+  be6:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=5000
+    ports:
+      - "8086:8888"
+
+  be7:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=1000
+    ports:
+      - "8087:8888"
+
+  be8:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=1000
+    ports:
+      - "8088:8888"
+
+  be9:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DELAY=1000
+    ports:
+      - "8089:8888"
+
+  rplb:
+    build:
+      context: ../../
+      dockerfile: Dockerfile.race
+      args:
+        - VERSION=
+    depends_on:
+      - be1
+      - be2
+      - be3
+      - be4
+      - be5
+      - be6
+      - be7
+      - be8
+      - be9
+    environment:
+      - ALGO=leastloaded
+      - FE=localhost,example
+      - BE=example,http://host.docker.internal:8081,example,http://host.docker.internal:8082,example,http://host.docker.internal:8083,example,http://host.docker.internal:8084,example,http://host.docker.internal:8085,example,http://host.docker.internal:8086,example,http://host.docker.internal:8087,example,http://host.docker.internal:8088,example,http://host.docker.internal:8089
+    ports:
+      - "8080:8080"
+      - "8000:8000"

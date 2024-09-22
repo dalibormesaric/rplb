@@ -16,8 +16,8 @@ const (
 
 func TestRandomSequence(t *testing.T) {
 	getBackends := func() []*backend.Backend {
-		bp, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", randomBpName, randomB1, randomBpName, randomB2, randomBpName, randomB3))
-		return bp[randomBpName]
+		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s", randomBpName, randomB1, randomBpName, randomB2, randomBpName, randomB3))
+		return backendPool[randomBpName]
 	}()
 
 	var test = struct {

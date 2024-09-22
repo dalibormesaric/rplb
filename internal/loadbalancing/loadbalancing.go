@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	Random     string = "random"
-	First      string = "first"
-	RoundRobin string = "roundrobin"
-	Sticky     string = "sticky"
+	Random      string = "random"
+	First       string = "first"
+	RoundRobin  string = "roundrobin"
+	Sticky      string = "sticky"
+	LeastLoaded string = "leastloaded"
 )
 
 type Algorithm interface {
@@ -27,6 +28,13 @@ func NewAlgorithm(name string) (algo Algorithm, err error) {
 	}()
 
 	switch name {
+	case LeastLoaded:
+		return &leastLoaded{
+			state: &leastLoadedState{
+				roundRobinForPoolLoad: make(map[string]int),
+				loadForBackend:        make(map[string]int),
+			},
+		}, nil
 	case Sticky:
 		return &sticky{
 			state: &stickyState{

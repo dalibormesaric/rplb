@@ -124,7 +124,6 @@ With this project I wanted to have two things:
 - [ ] docs
 - [ ] fix monitor uvavailable initial label
 - [ ] least-loaded round robin
-- [ ] sticky n per client?
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
 - [ ] /metrics?
