@@ -27,7 +27,7 @@ func TestRandomSequence(t *testing.T) {
 	}
 
 	random, _ := NewAlgorithm(Random)
-	for range 7 {
+	for range 100 {
 		b, _ := random.GetNext("", test.backends)
 		if b.URL.String() != randomB1 && b.URL.String() != randomB2 && b.URL.String() != randomB3 {
 			t.Errorf("wrong backend: want (%s, %s or %s) got (%s)", randomB1, randomB2, randomB3, b.URL.String())

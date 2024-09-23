@@ -20,6 +20,7 @@ type Algorithm interface {
 	GetNext(remoteAddr string, backends []*backend.Backend) (backend *backend.Backend, afterBackendResponse func())
 }
 
+// Returns new load balancing algorithm.
 func NewAlgorithm(name string) (algo Algorithm, err error) {
 	defer func() {
 		if err == nil {

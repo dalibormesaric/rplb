@@ -14,8 +14,7 @@ type leastLoaded struct {
 type leastLoadedState struct {
 	mu                    sync.Mutex
 	roundRobinForPoolLoad map[string]int
-	loadForBackend        map[string]int
-	// track number of ongoing requests per backend
+	loadForBackend        map[string]int // Track number of ongoing requests per backend.
 }
 
 var _ (Algorithm) = (*leastLoaded)(nil)
@@ -28,12 +27,9 @@ func (algo *leastLoaded) GetNext(_ string, backends []*backend.Backend) (backend
 		return nil, nil
 	}
 
-	// ensure all backends are in state with initial load n = 0
-	algo.ensureLoadForBackendInState(backends)
-
-	// go through all live backends and find all with least n
+	// go through all backends and find all with least n
 	// and do round robin for that n
-	backend = algo.getLeastLoad(backends)
+	backend = algo.getLeastLoaded(backends)
 
 	algo.state.loadForBackend[backend.Name]++
 
@@ -46,23 +42,9 @@ func (algo *leastLoaded) GetNext(_ string, backends []*backend.Backend) (backend
 	}(backend.Name)
 
 	return backend, afterBackendResponse
-	// find backend with least load (number of requests)
-	// increase number of requests for backend
-	// call proxy
-	// decrease number of requests for backend
 }
 
-func (algo *leastLoaded) ensureLoadForBackendInState(backends []*backend.Backend) {
-	// TODO: to avoid calling this on every request, pass backends when calling NewAlgorithm
-	for _, b := range backends {
-		_, ok := algo.state.loadForBackend[b.Name]
-		if !ok {
-			algo.state.loadForBackend[b.Name] = 0
-		}
-	}
-}
-
-func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.Backend) {
+func (algo *leastLoaded) getLeastLoaded(backends []*backend.Backend) (be *backend.Backend) {
 	minLoadForBackend := 999
 
 	for _, b := range backends {
@@ -72,34 +54,34 @@ func (algo *leastLoaded) getLeastLoad(backends []*backend.Backend) (ba *backend.
 		}
 	}
 
-	roundRobinForLoad, ok := algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)]
+	roundRobinForPoolLoad, ok := algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)]
 	if !ok {
-		roundRobinForLoad, algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)] = 0, 0
+		roundRobinForPoolLoad, algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)] = 0, 0
 	}
 
-	iForLoad := 0
+	nForPoolLoad := 0
 	var firstBackend *backend.Backend
 	for _, b := range backends {
 		if minLoadForBackend == algo.state.loadForBackend[b.Name] {
 			if firstBackend == nil {
 				firstBackend = b
 			}
-			if iForLoad == roundRobinForLoad {
-				ba = b
+			if nForPoolLoad == roundRobinForPoolLoad {
+				be = b
 				algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)]++
 				break
 			} else {
-				iForLoad++
+				nForPoolLoad++
 			}
 		}
 	}
 
-	if ba == nil {
+	if be == nil {
 		algo.state.roundRobinForPoolLoad[getPoolLoad(backends[0], minLoadForBackend)] = 1
-		ba = firstBackend
+		be = firstBackend
 	}
 
-	return ba
+	return be
 }
 
 func getPoolLoad(backend *backend.Backend, load int) string {

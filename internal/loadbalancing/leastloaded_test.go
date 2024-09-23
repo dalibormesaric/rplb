@@ -58,7 +58,7 @@ func TestGet(t *testing.T) {
 		}
 
 		for i, expectedBackend := range test.expectedBackends {
-			b, f := leastloaded.GetNext("", backends)
+			b, afterBackendResponse := leastloaded.GetNext("", backends)
 			if b.URL.String() != expectedBackend {
 				t.Errorf("Wrong backend at step (%d): want (%s) got (%s)\n", i, expectedBackend, b.URL.String())
 			}
@@ -69,7 +69,7 @@ func TestGet(t *testing.T) {
 			}
 
 			if test.callbackAfter {
-				f()
+				afterBackendResponse()
 			}
 		}
 	}
