@@ -2,6 +2,8 @@
 
 [![Go Build Test](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml)
 
+[![Docker](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml)
+
 Load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
 ## Features
@@ -74,6 +76,18 @@ docker compose -f example/compose.yaml down
 ```
 
 ![traffic gif](/docs/traffic.gif)
+
+### Least-Loaded Round Robin
+
+Inspired by the [SRE Book](https://sre.google/sre-book/load-balancing-datacenter/#least-loaded-round-robin-WEswh9CN) I was reading at the time.
+
+``` sh
+docker compose -f example/leastloaded/compose.yaml up rplb --build
+
+seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep Response
+
+docker compose -f example/leastloaded/compose.yaml down
+```
 
 ## Development
 
