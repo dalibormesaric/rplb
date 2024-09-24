@@ -15,7 +15,11 @@
                     {{range $value}}
                     <div class="monitor" name="{{.Name}}">
                         <div class="monitor-name">{{.URL.Host}}</div>
-                        <div class="monitor-latency">Latency: <span name="{{.Name}}latency">unavailable</span></div>
+                        {{/* Since there is no arithmetic support in go templates, there is this hack: https://stackoverflow.com/a/72465098 */}}
+                        {{$length := len (slice (printf "%*s" (len .GetMonitorFrames) "") 1)}}
+                        {{if ge $length 0}}
+                        <div class="monitor-latency">Latency: <span name="{{.Name}}latency">{{printf "%v" (index .GetMonitorFrames $length).Latency}}</span></div>
+                        {{end}}
                         <div class="monitor-grid">
                             {{range .GetMonitorFrames}}
                             {{if .Live}}

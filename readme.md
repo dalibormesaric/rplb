@@ -11,6 +11,7 @@ Load balance requests based on configured hostname accross configured backends. 
 - ⚙️ Simple configuration
    - In-line
 - ⚡️ Static Load Balancing
+   - Least-Loaded Round Robin
    - Sticky Round Robin
    - Round Robin
    - Random
@@ -84,7 +85,7 @@ Inspired by the [SRE Book](https://sre.google/sre-book/load-balancing-datacenter
 ``` sh
 docker compose -f example/leastloaded/compose.yaml up rplb --build
 
-seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep Response
+seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep Response"
 
 docker compose -f example/leastloaded/compose.yaml down
 ```
@@ -136,8 +137,6 @@ With this project I wanted to have two things:
 ### TODO:
 
 - [ ] docs
-- [ ] fix monitor uvavailable initial label
-- [ ] least-loaded round robin
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
 - [ ] /metrics?
