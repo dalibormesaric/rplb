@@ -57,7 +57,7 @@ To resolve custom domains on the same IP where Home Assistant is running, use [A
 ``` txt
 Usage of rplb:
   -a string
-        Algorithm used for loadbalancing. Choose from: first, random, roundrobin or sticky. (default "sticky")
+        Algorithm used for loadbalancing. Choose from: first, random, roundrobin, sticky or leastloaded. (default "sticky")
   -b string
         Comma-separated list of BackendPool Name and URL pairs. (example "backend,http://10.0.0.1:1234")
   -f string
