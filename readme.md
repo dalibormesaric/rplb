@@ -44,7 +44,7 @@ docker run -d --rm -p 8000:8000 -p 8080:8080 -e FE=myapp.example.com,myapp -e BE
 
 > BE=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234
 - `myapp` is name of the Backend Pool to which the URL is assigned
-- `http://10.0.0.1:1234`, `http://10.0.0.1:1234` and `http://10.0.0.3:1234` are the URLs of your application
+- `http://10.0.0.1:1234`, `http://10.0.0.2:1234` and `http://10.0.0.3:1234` are the URLs of your application
 
 ### Home Assistant
 
