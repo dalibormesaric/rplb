@@ -18,7 +18,11 @@
                         {{/* Since there is no arithmetic support in go templates, there is this hack: https://stackoverflow.com/a/72465098 */}}
                         {{$length := len (slice (printf "%*s" (len .GetMonitorFrames) "") 1)}}
                         {{if ge $length 0}}
-                        <div class="monitor-latency">Latency: <span name="{{.Name}}latency">{{printf "%v" (index .GetMonitorFrames $length).Latency}}</span></div>
+                            {{if (index .GetMonitorFrames $length).Live}}
+                                <div class="monitor-latency">Latency: <span name="{{.Name}}latency">{{printf "%v" (index .GetMonitorFrames $length).Latency}}</span></div>
+                            {{else}}
+                                <div class="monitor-latency">Latency: <span name="{{.Name}}latency">unavailable</span></div>
+                            {{end}}
                         {{end}}
                         <div class="monitor-grid">
                             {{range .GetMonitorFrames}}
