@@ -80,8 +80,6 @@ docker compose -f example/compose.yaml down
 
 ### Least-Loaded Round Robin
 
-Inspired by the [SRE Book](https://sre.google/sre-book/load-balancing-datacenter/#least-loaded-round-robin-WEswh9CN) I was reading at the time.
-
 ``` sh
 docker compose -f example/leastloaded/compose.yaml up rplb --build
 
