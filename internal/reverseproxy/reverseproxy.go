@@ -5,7 +5,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -82,10 +81,9 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		if afterBackendResponse != nil {
 			afterBackendResponse()
 		}
-		rplbBackendStatusCode, _ := strconv.Atoi(w.Header().Get(backend.RPLBBackendStatusCode))
-		w.Header().Del(backend.RPLBBackendStatusCode)
+		rplbBackendStatusCode := r.Context().Value(backend.RPLBBackendStatusCode)
 
-		if rplbBackendStatusCode < http.StatusInternalServerError {
+		if rplbBackendStatusCode == nil || rplbBackendStatusCode.(int) < http.StatusInternalServerError {
 			if rp.messages != nil {
 				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 				rp.messages <- tf
