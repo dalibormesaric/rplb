@@ -1,25 +1,21 @@
 package backend
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
-// The key type is unexported to prevent collisions with context keys defined in
-// other packages.
-type key string
-
 const (
-	// RPLBBackendStatusCode is  the context key to pass error status code from backend to reverse proxy and trigger a retry.
-	RPLBBackendStatusCode key = "RPLB-Backend-StatusCode"
+	// this is used for a hack to be able to pass error status code from backend to reverse proxy and trigger a retry
+	RPLBBackendStatusCode string = "RPLB-Backend-StatusCode"
 )
 
 type BackendPool map[string][]*Backend
@@ -111,9 +107,7 @@ func createBackend(poolName, urlString string) (*Backend, error) {
 		return nil
 	}
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-		ctx := context.WithValue(r.Context(), RPLBBackendStatusCode, http.StatusBadGateway)
-		req := r.WithContext(ctx)
-		*r = *req
+		w.Header().Add(RPLBBackendStatusCode, strconv.Itoa(http.StatusBadGateway))
 	}
 
 	return &Backend{
