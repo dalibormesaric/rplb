@@ -21,14 +21,6 @@ const (
 )
 
 func TestStickySequence(t *testing.T) {
-	getBackendsForPool := func(poolName string) []*backend.Backend {
-		backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-			stickyPool1, stickyB1, stickyPool1, stickyB2, stickyPool1, stickyB3,
-			stickyPool2, stickyB4, stickyPool2, stickyB5,
-			stickyPool3, stickyB1))
-		return backendPool[poolName]
-	}
-
 	var tests = []struct {
 		otherPool []*backend.Backend
 		backends  []*backend.Backend
@@ -69,6 +61,75 @@ func TestStickySequence(t *testing.T) {
 			b, _ := sticky.GetNext(test.clients[i], test.backends)
 			if b.URL.String() != expected {
 				t.Errorf("wrong backend for client (%s): want (%s) got (%s)", test.clients[i], expected, b.URL.String())
+			}
+		}
+	}
+}
+
+func TestStickyBackendUnavailable(t *testing.T) {
+	var tests = []struct {
+		backends           []*backend.Backend
+		backendUnavailable string
+		remoteAddr         string
+		otherRemoteAddr    string
+		expected           []string
+	}{
+		{
+			backends:           getBackendsForPool(stickyPool1),
+			backendUnavailable: stickyB1,
+			remoteAddr:         stickyC1,
+			otherRemoteAddr:    "",
+			expected:           []string{stickyB1, stickyB3, stickyB3, stickyB3, stickyB3, stickyB3, stickyB3},
+		},
+		{
+			backends:           getBackendsForPool(stickyPool1),
+			backendUnavailable: stickyB2,
+			remoteAddr:         stickyC1,
+			otherRemoteAddr:    stickyC2,
+			expected:           []string{stickyB2, stickyB1, stickyB1, stickyB1, stickyB1, stickyB1, stickyB1},
+		},
+		{
+			backends:           getBackendsForPool(stickyPool2),
+			backendUnavailable: stickyB4,
+			remoteAddr:         stickyC1,
+			otherRemoteAddr:    "",
+			expected:           []string{stickyB4, stickyB5, stickyB5, stickyB5, stickyB5, stickyB5, stickyB5},
+		},
+		{
+			backends:           getBackendsForPool(stickyPool2),
+			backendUnavailable: stickyB4,
+			remoteAddr:         stickyC1,
+			otherRemoteAddr:    stickyC2,
+			expected:           []string{stickyB5, stickyB5, stickyB5, stickyB5, stickyB5, stickyB5, stickyB5},
+		},
+		{
+			backends:           getBackendsForPool(stickyPool2),
+			backendUnavailable: stickyB5,
+			remoteAddr:         stickyC1,
+			otherRemoteAddr:    stickyC2,
+			expected:           []string{stickyB5, stickyB4, stickyB4, stickyB4, stickyB4, stickyB4, stickyB4},
+		},
+	}
+
+	for _, test := range tests {
+		sticky, _ := NewAlgorithm(Sticky)
+		if test.otherRemoteAddr != "" {
+			sticky.GetNext(test.otherRemoteAddr, test.backends)
+		}
+		for i, expected := range test.expected {
+			b, _ := sticky.GetNext(test.remoteAddr, test.backends)
+			if i == 0 {
+				// backend unavailable
+				var tmp []*backend.Backend
+				for _, tmpB := range test.backends {
+					if tmpB.URL.String() != test.backendUnavailable {
+						tmp = append(tmp, tmpB)
+					}
+				}
+				test.backends = tmp
+			}
+			if b.URL.String() != expected {
+				t.Errorf("wrong backend for client (%s): want (%s) got (%s)", test.remoteAddr, expected, b.URL.String())
 			}
 		}
 	}
@@ -119,4 +180,12 @@ func TestStickyGetNil(t *testing.T) {
 			t.Errorf("wrong backend: want (%v) got (%v)", test.expected, b)
 		}
 	}
+}
+
+func getBackendsForPool(poolName string) []*backend.Backend {
+	backendPool, _ := backend.NewBackendPool(fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+		stickyPool1, stickyB1, stickyPool1, stickyB2, stickyPool1, stickyB3,
+		stickyPool2, stickyB4, stickyPool2, stickyB5,
+		stickyPool3, stickyB1))
+	return backendPool[poolName]
 }
