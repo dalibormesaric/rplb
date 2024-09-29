@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/dalibormesaric/rplb/internal/backend"
 	"github.com/dalibormesaric/rplb/internal/frontend"
 )
@@ -35,6 +39,19 @@ var assets embed.FS
 
 var (
 	since = time.Now()
+
+	FrontendHits = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "rplb_frontend_hits",
+		Help: "The total number of frontend hits",
+	})
+	BackendRetries = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "rplb_backend_retries",
+		Help: "The total number of backend retries",
+	})
+	BackendHits = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "rplb_backend_hits",
+		Help: "The total number of backend hits",
+	})
 )
 
 func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messages chan interface{}, version string) {
@@ -71,6 +88,8 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messag
 			ParseFS(content, "templates/index.html", "templates/traffic.html")
 		a.ExecuteTemplate(w, "traffic.html", TrafficModel{BaseModel: BaseModel{SelectedMenu: "traffic", Version: version}, Frontends: frontends, Backends: bp})
 	})
+
+	http.Handle("/metrics", promhttp.Handler())
 
 	log.Printf("Dashboard listening on :8000\n")
 	http.ListenAndServe(":8000", nil)

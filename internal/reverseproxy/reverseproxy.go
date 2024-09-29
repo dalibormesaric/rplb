@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
+	"github.com/dalibormesaric/rplb/internal/dashboard"
 	"github.com/dalibormesaric/rplb/internal/frontend"
 	"github.com/dalibormesaric/rplb/internal/loadbalancing"
 )
@@ -61,6 +62,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.IncHits()}
 		rp.messages <- tf
 	}
+	dashboard.FrontendHits.Inc()
 
 	retryTimeout := 500 * time.Millisecond
 	retryAmount := 5
@@ -90,10 +92,12 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 				rp.messages <- tf
 			}
+			dashboard.BackendHits.Inc()
 			break
 		}
 
 		time.Sleep(retryTimeout)
 		retryTimeout *= 2
+		dashboard.BackendRetries.Inc()
 	}
 }

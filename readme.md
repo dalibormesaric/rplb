@@ -141,6 +141,7 @@ With this project I wanted to have two things:
 
 ### Some ideas
 
+- [ ] https://prometheus.io/docs/guides/go-application/
 - [ ] https://bazel-contrib.github.io/SIG-rules-authors/go-tutorial.html
 - [ ] https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
 - [ ] https://stackoverflow.com/questions/70442770/infinite-scrolling-carousel-css-only
