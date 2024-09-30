@@ -24,12 +24,12 @@ func TestIntegration(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 		go func() {
 			defer wg.Done()
-			http.Get("http://host.docker.internal:8080")
+			http.Get("http://localhost:8080")
 		}()
 	}
 	wg.Wait()
 
-	resp, _ := http.Get("http://host.docker.internal:8000/metrics")
+	resp, _ := http.Get("http://localhost:8000/metrics")
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		line := scanner.Text()

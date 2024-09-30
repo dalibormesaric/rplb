@@ -14,7 +14,4 @@ jobs:
       - name: Build
         run: go build -v ./...
       - name: Test with the Go CLI
-        run: |
-          docker compose -f example/compose.yaml up -d rplb
-          docker ps
-        # run: go test ./...
+        run: go test ./... -timeout=10m
