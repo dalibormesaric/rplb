@@ -138,6 +138,7 @@ With this project I wanted to have two things:
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
 - [ ] /metrics?
+- [ ] slog
 
 ### Some ideas
 
