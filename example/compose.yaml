@@ -7,6 +7,8 @@ services:
         - backend=be1
     ports:
       - "8081:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   be2:
     build:
@@ -16,6 +18,8 @@ services:
         - backend=be2
     ports:
       - "8082:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   be3:
     build:
@@ -25,6 +29,8 @@ services:
         - backend=be3
     ports:
       - "8083:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   rplb:
     build:

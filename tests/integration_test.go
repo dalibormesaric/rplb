@@ -17,8 +17,6 @@ func TestIntegration(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	time.Sleep(90 * time.Second)
-
 	var wg sync.WaitGroup
 
 	for range 10 {
