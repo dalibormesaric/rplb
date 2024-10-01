@@ -14,8 +14,4 @@ jobs:
       - name: Build
         run: go build -v ./...
       - name: Test with the Go CLI
-        run: |
-          docker compose -f example/compose.yaml up -d rplb
-          curl http://localhost:8080
-          curl http://localhost:8000/metrics
-        # run: go test ./...
+        run: go test ./...
