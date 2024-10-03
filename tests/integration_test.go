@@ -2,9 +2,7 @@ package integration
 
 import (
 	"bufio"
-	"log"
 	"net/http"
-	"os/exec"
 	"strings"
 	"sync"
 	"testing"
@@ -12,10 +10,7 @@ import (
 )
 
 func TestIntegration(t *testing.T) {
-	err := exec.Command("docker", "compose", "-f", "../example/compose.yaml", "up", "-d", "rplb").Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	SetUp()
 
 	var wg sync.WaitGroup
 
@@ -40,8 +35,5 @@ func TestIntegration(t *testing.T) {
 		}
 	}
 
-	err = exec.Command("docker", "compose", "-f", "../example/compose.yaml", "down").Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	TearDown()
 }
