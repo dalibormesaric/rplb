@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func SetUp() {
+func setUp(algo string) {
 	out, err := exec.Command("docker", "-v").Output()
 	if err != nil {
 		log.Fatalf("Docker not running: (%v)", err)
@@ -15,13 +15,13 @@ func SetUp() {
 		log.Fatal("Docker not running")
 	}
 
-	err = exec.Command("docker", "compose", "-f", "../example/compose.yaml", "up", "-d", "rplb").Run()
+	err = exec.Command("docker", "compose", "--env-file", "."+algo+".env", "-f", "../example/compose.yaml", "up", "-d", "rplb", "--build").Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func TearDown() {
+func tearDown() {
 	err := exec.Command("docker", "compose", "-f", "../example/compose.yaml", "down").Run()
 	if err != nil {
 		log.Fatal(err)

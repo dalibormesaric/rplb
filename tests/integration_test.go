@@ -7,10 +7,12 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/dalibormesaric/rplb/internal/loadbalancing"
 )
 
 func TestIntegration(t *testing.T) {
-	SetUp()
+	setUp(loadbalancing.First)
 
 	var wg sync.WaitGroup
 
@@ -29,11 +31,11 @@ func TestIntegration(t *testing.T) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "rplb_backend_hits") {
-			if !strings.Contains(line, "rplb_backend_hits 10") {
+			if !strings.Contains(line, "rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 10") {
 				t.Error(line)
 			}
 		}
 	}
 
-	TearDown()
+	tearDown()
 }

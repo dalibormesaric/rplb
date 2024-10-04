@@ -39,6 +39,7 @@ services:
     environment:
       - FE=localhost,example
       - BE=example,http://172.17.0.1:8081,example,http://172.17.0.1:8082,example,http://172.17.0.1:8083
+      - ALGO=$ALGO
     ports:
       - "8080:8080"
       - "8000:8000"

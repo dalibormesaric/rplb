@@ -48,10 +48,10 @@ var (
 		Name: "rplb_backend_retries",
 		Help: "The total number of backend retries",
 	})
-	BackendHits = promauto.NewCounter(prometheus.CounterOpts{
+	BackendHits = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "rplb_backend_hits",
 		Help: "The total number of backend hits",
-	})
+	}, []string{"backend_name"})
 )
 
 func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messages chan interface{}, version string) {

@@ -92,7 +92,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 				rp.messages <- tf
 			}
-			dashboard.BackendHits.Inc()
+			dashboard.BackendHits.WithLabelValues(liveBackend.URL.String()).Inc()
 			break
 		}
 
