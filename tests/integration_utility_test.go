@@ -15,6 +15,7 @@ func setUp(algo string) {
 		log.Fatal("Docker not running")
 	}
 
+	// TODO: check if env file exists
 	err = exec.Command("docker", "compose", "--env-file", "."+algo+".env", "-f", "../example/compose.yaml", "up", "-d", "rplb", "--build").Run()
 	if err != nil {
 		log.Fatal(err)
