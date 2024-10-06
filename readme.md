@@ -10,7 +10,7 @@ Load balance requests based on configured hostname accross configured backends. 
 
 - ⚙️ Simple configuration
    - In-line
-- ⚡️ Static Load Balancing
+- ⚡️ Load Balancing
    - Least-Loaded Round Robin
    - Sticky Round Robin
    - Round Robin
