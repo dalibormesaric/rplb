@@ -14,40 +14,52 @@ import (
 
 func TestIntegration(t *testing.T) {
 	tests := []struct {
-		algoirthm string
-		expected  []string
+		algoirthm        string
+		expectedBackends []string
+		expectedFrontend string
+		expectedRetries  string
 	}{
 		{
-			algoirthm: loadbalancing.First,
-			expected:  []string{"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 10"},
+			algoirthm:        loadbalancing.First,
+			expectedBackends: []string{"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 10"},
+			expectedFrontend: "rplb_frontend_hits 10",
+			expectedRetries:  "rplb_backend_retries 0",
 		},
 		{
 			algoirthm: loadbalancing.Random,
-			expected: []string{
+			expectedBackends: []string{
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"}",
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8082\"}",
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8083\"}",
 			},
+			expectedFrontend: "rplb_frontend_hits 10",
+			expectedRetries:  "rplb_backend_retries 0",
 		},
 		{
 			algoirthm: loadbalancing.RoundRobin,
-			expected: []string{
+			expectedBackends: []string{
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 4",
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8082\"} 3",
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8083\"} 3",
 			},
+			expectedFrontend: "rplb_frontend_hits 10",
+			expectedRetries:  "rplb_backend_retries 0",
 		},
 		{
-			algoirthm: loadbalancing.Sticky,
-			expected:  []string{"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 10"},
+			algoirthm:        loadbalancing.Sticky,
+			expectedBackends: []string{"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 10"},
+			expectedFrontend: "rplb_frontend_hits 10",
+			expectedRetries:  "rplb_backend_retries 0",
 		},
 		{
 			algoirthm: loadbalancing.LeastLoaded,
-			expected: []string{
+			expectedBackends: []string{
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8081\"} 4",
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8082\"} 3",
 				"rplb_backend_hits{backend_name=\"http://172.17.0.1:8083\"} 3",
 			},
+			expectedFrontend: "rplb_frontend_hits 10",
+			expectedRetries:  "rplb_backend_retries 0",
 		},
 	}
 
@@ -72,23 +84,35 @@ func TestIntegration(t *testing.T) {
 		for scanner.Scan() {
 			line := scanner.Text()
 
-			for _, metric := range test.expected {
+			for _, metric := range test.expectedBackends {
 				if strings.Contains(line, metric) {
 					tested = append(tested, metric)
 				}
 			}
 
-			// TODO: test frontend hits is 10
-			// TODO: retries is 0
+			if strings.Contains(line, test.expectedFrontend) {
+				tested = append(tested, test.expectedFrontend)
+			}
+
+			if strings.Contains(line, test.expectedRetries) {
+				tested = append(tested, test.expectedRetries)
+			}
 		}
 
-		if len(tested) != len(test.expected) {
+		// remove 2 because of expectedFrontend and expectedRetries
+		if len(tested)-2 != len(test.expectedBackends) {
 			t.Errorf("Did not find all expected test cases.\n")
 		}
-		for _, testExpected := range test.expected {
+		for _, testExpected := range test.expectedBackends {
 			if !slices.Contains(tested, testExpected) {
 				t.Errorf("Algorithm (%s): (%s)", test.algoirthm, testExpected)
 			}
+		}
+		if !slices.Contains(tested, test.expectedFrontend) {
+			t.Errorf("Algorithm (%s): (%s)", test.algoirthm, test.expectedFrontend)
+		}
+		if !slices.Contains(tested, test.expectedRetries) {
+			t.Errorf("Algorithm (%s): (%s)", test.algoirthm, test.expectedRetries)
 		}
 
 		tearDown()
