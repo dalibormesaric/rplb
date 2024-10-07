@@ -62,7 +62,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		tf := TrafficFrame{Type: "traffic-fe", Name: host, Hits: f.IncHits()}
 		rp.messages <- tf
 	}
-	dashboard.FrontendHits.Inc()
+	dashboard.FrontendHits.WithLabelValues(host).Inc()
 
 	retryTimeout := 500 * time.Millisecond
 	retryAmount := 5
@@ -92,7 +92,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 				tf := TrafficBackendFrame{TrafficFrame: &TrafficFrame{Type: "traffic-be", Name: liveBackend.Name, Hits: liveBackend.IncHits()}, FrontendName: host}
 				rp.messages <- tf
 			}
-			dashboard.BackendHits.WithLabelValues(liveBackend.URL.String()).Inc()
+			dashboard.BackendHits.WithLabelValues(liveBackend.GetPoolName(), liveBackend.URL.String()).Inc()
 			break
 		}
 

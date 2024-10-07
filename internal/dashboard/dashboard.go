@@ -40,10 +40,10 @@ var assets embed.FS
 var (
 	since = time.Now()
 
-	FrontendHits = promauto.NewCounter(prometheus.CounterOpts{
+	FrontendHits = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "rplb_frontend_hits",
 		Help: "The total number of frontend hits",
-	})
+	}, []string{"frontend_host"})
 	BackendRetries = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "rplb_backend_retries",
 		Help: "The total number of backend retries",
@@ -51,7 +51,7 @@ var (
 	BackendHits = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "rplb_backend_hits",
 		Help: "The total number of backend hits",
-	}, []string{"backend_name"})
+	}, []string{"backend_bool_name", "backend_url"})
 )
 
 func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messages chan interface{}, version string) {
