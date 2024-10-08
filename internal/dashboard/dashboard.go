@@ -3,7 +3,7 @@ package dashboard
 import (
 	"embed"
 	"html/template"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -91,7 +91,7 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, messag
 
 	http.Handle("/metrics", promhttp.Handler())
 
-	log.Printf("Dashboard listening on :8000\n")
+	slog.Info("Dashboard listening on :8000")
 	http.ListenAndServe(":8000", nil)
 }
 

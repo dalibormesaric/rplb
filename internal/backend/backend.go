@@ -2,7 +2,7 @@ package backend
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -49,7 +49,7 @@ func NewBackendPool(nameUrlPairs string) (BackendPool, error) {
 	bp := make(BackendPool)
 
 	if strings.TrimSpace(nameUrlPairs) == "" {
-		log.Println("No backends configured")
+		slog.Warn("No backends configured")
 		return bp, nil
 	}
 
@@ -83,7 +83,7 @@ func NewBackendPool(nameUrlPairs string) (BackendPool, error) {
 				}
 				bp[k] = append(bp[k], b)
 			}
-			log.Printf("Added backend url (%s) for (%s)\n", backendUrl, k)
+			slog.Info("Added backend", "url", backendUrl, "backendPool", k)
 		}
 	}
 

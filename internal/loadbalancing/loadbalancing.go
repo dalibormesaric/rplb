@@ -2,7 +2,7 @@ package loadbalancing
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
 )
@@ -24,7 +24,7 @@ type Algorithm interface {
 func NewAlgorithm(name string) (algo Algorithm, err error) {
 	defer func() {
 		if err == nil {
-			log.Printf("Using algorithm (%s)\n", name)
+			slog.Info("Using algorithm", "algorithm", name)
 		}
 	}()
 

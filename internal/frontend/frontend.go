@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"strings"
 	"sync/atomic"
 )
@@ -21,7 +21,7 @@ func NewFrontends(urlNamePair string) (Frontends, error) {
 	frontends := make(Frontends)
 
 	if strings.TrimSpace(urlNamePair) == "" {
-		log.Println("No frontends configured")
+		slog.Warn("No frontends configured")
 		return frontends, nil
 	}
 
@@ -47,7 +47,7 @@ func NewFrontends(urlNamePair string) (Frontends, error) {
 			frontends[host] = &Frontend{
 				BackendName: backendName,
 			}
-			log.Printf("Added frontend host (%s) for (%s)\n", host, backendName)
+			slog.Info("Added frontend", "host", host, "backendPool", backendName)
 		}
 	}
 

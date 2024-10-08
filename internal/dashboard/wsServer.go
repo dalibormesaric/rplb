@@ -3,7 +3,7 @@ package dashboard
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -29,7 +29,7 @@ func (ws *WsServer) WsHandler(w http.ResponseWriter, r *http.Request) {
 		InsecureSkipVerify: true,
 	})
 	if err != nil {
-		log.Println(err)
+		slog.Error(err.Error())
 		return
 	}
 	defer c.Close(websocket.StatusInternalError, "StatusInternalError")

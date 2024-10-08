@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 )
 
 var (
@@ -14,5 +14,5 @@ func init() {
 	if Version != "" {
 		s += fmt.Sprintf(" %s", Version)
 	}
-	log.Println(s + " ...")
+	slog.Info(s + " ...")
 }

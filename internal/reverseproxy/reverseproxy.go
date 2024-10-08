@@ -2,7 +2,7 @@ package reverseproxy
 
 import (
 	"embed"
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"strconv"
@@ -42,7 +42,7 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, loadba
 	rpMux := http.NewServeMux()
 	rpMux.HandleFunc("/", rp.reverseProxyAndLoadBalance)
 
-	log.Printf("Reverse Proxy listening on :8080\n")
+	slog.Info("Reverse Proxy listening on :8080")
 	http.ListenAndServe(":8080", rpMux)
 }
 
@@ -53,7 +53,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 	host, _, _ := net.SplitHostPort(r.Host)
 	f := rp.frontends.Get(host)
 	if f == nil {
-		log.Printf("Unknown frontend host (%s)\n", host)
+		slog.Warn("Unknown frontend host", "host", host)
 		http.ServeFileFS(w, r, static, "static/404.html")
 		return
 	}
@@ -71,10 +71,10 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		liveBackend, afterBackendResponse := rp.loadbalancing.GetNext(r.RemoteAddr, liveBackends)
 		if liveBackend == nil || retryCurrent+1 == retryAmount {
 			if liveBackend == nil {
-				log.Printf("No live backends for host (%s)\n", host)
+				slog.Warn("No live backends", "host", host)
 			}
 			if retryCurrent+1 == retryAmount {
-				log.Printf("Backends unavailable after retries.\n")
+				slog.Warn("Backends unavailable after retries", "host", host)
 			}
 			http.ServeFileFS(w, r, static, "static/503.html")
 			break
