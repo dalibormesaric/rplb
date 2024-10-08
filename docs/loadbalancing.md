@@ -18,6 +18,10 @@ If you explicitly want to use just one of the backends.
 
 ## Round robin
 
+### Why use it?
+
+If you want to distribute amount of requests equally across all available backends.
+
 ## Sticky round robin
 
 ### Why use it?
