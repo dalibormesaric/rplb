@@ -79,6 +79,7 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 			http.ServeFileFS(w, r, static, "static/503.html")
 			break
 		}
+		// TODO: Consider X-Forwarded-For or similar header
 		// rw.Header().Add("proxy-url", liveBackends[randBackend].Url)
 		liveBackend.Proxy.ServeHTTP(w, r)
 		if afterBackendResponse != nil {
