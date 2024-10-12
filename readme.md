@@ -108,16 +108,6 @@ docker build --build-arg="VERSION=$(git describe --tags --abbrev=0)" -t rplb .
 go test ./... -count=1
 ```
 
-### Testing data races
-
-``` sh
-docker compose -f example/compose.race.yaml up rplb --build
-
-seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep \<h1"
-
-docker compose -f example/compose.race.yaml down
-```
-
 ## What is this?
 
 With this project I wanted to have two things:

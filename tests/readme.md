@@ -1,5 +1,15 @@
 # Tests
 
+## Testing data races
+
+``` sh
+docker compose --env-file tests/.roundrobin.env -f example/compose.race.yaml up rplb --build
+
+seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep \<h1"
+
+docker compose --env-file tests/.roundrobin.env -f example/compose.race.yaml down
+```
+
 ## Integration tests
 
 Integration tests are used to test RPLB end to end. This is also black-box testing of the application.
