@@ -28,6 +28,8 @@ Load balance requests based on configured hostname accross configured backends. 
 
 ## Getting started
 
+### Docker
+
 You can run `RPLB` with these commands:
 
 ``` sh
@@ -66,6 +68,8 @@ Usage of rplb:
 
 ## Try it out
 
+### Example
+
 There is an `/example` folder in this repository containing already configured `RPLB` with tree backends. You can try it our by running:
 
 ``` sh
@@ -89,6 +93,16 @@ docker compose -f example/leastloaded/compose.yaml down
 ```
 
 ## Development
+
+### Version using Git Tags
+
+``` sh
+git tag
+
+git tag v0.1
+
+git push origin v0.1
+```
 
 ``` sh
 go run -ldflags "-X github.com/dalibormesaric/rplb/internal/config.Version=$(git describe --tags --abbrev=0)" cmd/rplb/main.go
