@@ -1,8 +1,7 @@
 # RPLB – Reverse Proxy Load Balancer
 
 [![Go Build Test](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml)
-
-[![Docker](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml)
+[![Docker Publish](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml)
 
 Load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
