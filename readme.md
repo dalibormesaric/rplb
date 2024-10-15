@@ -137,6 +137,7 @@ With this project I wanted to have two things:
 
 ### TODO:
 
+- [ ] use RPLB_ prefix in docker environment variables
 - [ ] docs
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
