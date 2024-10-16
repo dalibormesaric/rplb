@@ -97,9 +97,9 @@ services:
       - be8
       - be9
     environment:
-      - ALGO=leastloaded
-      - FE=localhost,example
-      - BE=example,http://host.docker.internal:8081,example,http://host.docker.internal:8082,example,http://host.docker.internal:8083,example,http://host.docker.internal:8084,example,http://host.docker.internal:8085,example,http://host.docker.internal:8086,example,http://host.docker.internal:8087,example,http://host.docker.internal:8088,example,http://host.docker.internal:8089
+      - RPLB_A=leastloaded
+      - RPLB_F=localhost,example
+      - RPLB_B=example,http://host.docker.internal:8081,example,http://host.docker.internal:8082,example,http://host.docker.internal:8083,example,http://host.docker.internal:8084,example,http://host.docker.internal:8085,example,http://host.docker.internal:8086,example,http://host.docker.internal:8087,example,http://host.docker.internal:8088,example,http://host.docker.internal:8089
     ports:
       - "8080:8080"
       - "8000:8000"

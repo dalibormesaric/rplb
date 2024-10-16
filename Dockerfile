@@ -20,8 +20,8 @@ COPY --from=build /usr/local/bin/app ./
 EXPOSE 8000
 EXPOSE 8080
 
-ENV FE=
-ENV BE=
-ENV ALGO=sticky
+ENV RPLB_F=
+ENV RPLB_B=
+ENV RPLB_A=sticky
 
-CMD ["sh", "-c", "./app -f \"${FE}\" -b \"${BE}\" -a \"${ALGO}\""]
+CMD ["sh", "-c", "./app -f \"${RPLB_F}\" -b \"${RPLB_B}\" -a \"${RPLB_A}\""]
