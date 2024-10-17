@@ -130,6 +130,8 @@ With this project I wanted to have two things:
 
 ## Misc
 
+Read more on [Load Balancing](./docs/loadbalancing.md) and [Reverse Proxy](/docs/reverseproxy.md)
+
 ### Tools used
 
 - https://coolors.co/palette/ef476f-ffd166-06d6a0
@@ -137,7 +139,6 @@ With this project I wanted to have two things:
 
 ### TODO:
 
-- [x] use RPLB_ prefix in docker environment variables
 - [ ] docs
 - [ ] algorithm state expiration?
 - [ ] favicon on static pages?
