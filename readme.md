@@ -5,6 +5,8 @@
 
 Load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
+Read more on [Reverse Proxy](/docs/reverseproxy.md) and [Load Balancing](./docs/loadbalancing.md).
+
 ## Features
 
 - ⚙️ Simple configuration
@@ -27,6 +29,18 @@ Load balance requests based on configured hostname accross configured backends. 
 
 ## Getting started
 
+### CLI
+
+``` txt
+Usage of rplb:
+  -a string
+        Algorithm used for load balancing. Choose from: first, random, roundrobin, sticky or leastloaded. (default "sticky")
+  -b string
+        Comma-separated list of BackendPool Name and URL pairs. (example "backend,http://10.0.0.1:1234")
+  -f string
+        Comma-separated list of Frontend Hostname and BackendPool Name pairs. (example "frontend.example.com,backend")
+```
+
 ### Docker
 
 You can run `RPLB` with these commands:
@@ -34,10 +48,13 @@ You can run `RPLB` with these commands:
 ``` sh
 docker pull ghcr.io/dalibormesaric/rplb:latest
 
-docker run -d --rm -p 8000:8000 -p 8080:8080 -e RPLB_F=myapp.example.com,myapp -e RPLB_B=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
+docker run -d --rm -p 8000:8000 -p 8080:8080 -e RPLB_A=roundrobin -e RPLB_F=myapp.example.com,myapp -e RPLB_B=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
 ```
 
 ### Configuration
+
+> RPLB_A=roundrobin
+- `roundrobin` is the name of one of the load balancing algorithms
 
 > RPLB_F=myapp.example.com,myapp
 - `myapp.example.com` is hostname where `RPLB` is running, so in this case you would access your backend via `http://myapp.example.com:8080` and the Dashboard via `http://myapp.example.com:8000`
@@ -52,18 +69,6 @@ docker run -d --rm -p 8000:8000 -p 8080:8080 -e RPLB_F=myapp.example.com,myapp -
 To run custom docker images, use [Advanced SSH & Web Terminal](https://github.com/hassio-addons/addon-ssh) from Community Add-ons.
 
 To resolve custom domains on the same IP where Home Assistant is running, use [AdGuard Home](https://www.home-assistant.io/integrations/adguard/) and its feature DNS rewrites.
-
-### CLI
-
-``` txt
-Usage of rplb:
-  -a string
-        Algorithm used for loadbalancing. Choose from: first, random, roundrobin, sticky or leastloaded. (default "sticky")
-  -b string
-        Comma-separated list of BackendPool Name and URL pairs. (example "backend,http://10.0.0.1:1234")
-  -f string
-        Comma-separated list of Frontend Hostname and BackendPool Name pairs. (example "frontend.example.com,backend")
-```
 
 ## Try it out
 
@@ -129,8 +134,6 @@ With this project I wanted to have two things:
 1. A fun Go project to work on
 
 ## Misc
-
-Read more on [Load Balancing](./docs/loadbalancing.md) and [Reverse Proxy](/docs/reverseproxy.md)
 
 ### Tools used
 
