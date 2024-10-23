@@ -45,3 +45,5 @@ This is a good choice if a backend uses in-memory cache that is relevant for a s
 Inspired by the [SRE Book](https://sre.google/sre-book/load-balancing-datacenter/#least-loaded-round-robin-WEswh9CN) I was reading at the time.
 
 ### Why use it?
+
+This is an alternative to round robin when some requests take longer time to resolve. This prevents the scenario when all heavy requests would hit the same backend, but are rather spread out across all other available backends.

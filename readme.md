@@ -144,7 +144,6 @@ With this project I wanted to have two things:
 
 - [ ] docs
 - [ ] algorithm state expiration?
-- [ ] favicon on static pages?
 
 ### Some ideas
 
