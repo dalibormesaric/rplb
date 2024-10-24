@@ -39,7 +39,7 @@ services:
     environment:
       - RPLB_F=localhost,example
       - RPLB_B=example,http://172.17.0.1:8081,example,http://172.17.0.1:8082,example,http://172.17.0.1:8083
-      - RPLB_A=$RPLB_A
+      - RPLB_A=sticky
     ports:
       - "8080:8080"
       - "8000:8000"

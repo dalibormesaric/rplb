@@ -18,6 +18,8 @@ Chooses the first backend from the provided list.
 
 If you explicitly want to use just one of the backends.
 
+![first](./first.gif)
+
 ## Round robin
 
 Distributes requests across all backends starting from first, going to the last and then starting again with the first backend from the provided list.
