@@ -77,7 +77,7 @@ To resolve custom domains on the same IP where Home Assistant is running, use [A
 There is an `/example` folder in this repository containing already configured `RPLB` with tree backends. You can try it our by running:
 
 ``` sh
-docker compose -f example/compose.yaml up rplb --build
+RPLB_A=first && docker compose -f example/compose.yaml up rplb --build
 
 for i in {1..10}; do curl -s localhost:8080 | grep \<h1; sleep 1; done;
 
@@ -89,7 +89,7 @@ docker compose -f example/compose.yaml down
 ### Least-Loaded Round Robin
 
 ``` sh
-docker compose -f example/leastloaded/compose.yaml up rplb --build
+RPLB_A=leastloaded && docker compose -f example/leastloaded/compose.yaml up rplb --build
 
 seq 1000 | parallel -n0 -j8 "curl -s http://localhost:8080 | grep Response"
 

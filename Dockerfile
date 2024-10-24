@@ -22,6 +22,6 @@ EXPOSE 8080
 
 ENV RPLB_F=
 ENV RPLB_B=
-ENV RPLB_A=sticky
+ENV RPLB_A=$RPLB_A
 
 CMD ["sh", "-c", "./app -f \"${RPLB_F}\" -b \"${RPLB_B}\" -a \"${RPLB_A}\""]
