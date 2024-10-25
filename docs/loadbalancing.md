@@ -10,6 +10,8 @@ Chooses at random some backend from the provided list.
 
 If you want to introduce some chaos.
 
+![random](./random.gif)
+
 ## First
 
 Chooses the first backend from the provided list.
@@ -27,6 +29,8 @@ Distributes requests across all backends starting from first, going to the last 
 ### Why use it?
 
 If you want to distribute amount of requests equally across all available backends.
+
+![roundrobin](./roundrobin.gif)
 
 ## Sticky round robin
 
@@ -49,3 +53,9 @@ Inspired by the [SRE Book](https://sre.google/sre-book/load-balancing-datacenter
 ### Why use it?
 
 This is an alternative to round robin when some requests take longer time to resolve. This prevents the scenario when all heavy requests would hit the same backend, but are rather spread out across all other available backends.
+
+### Screenshot
+
+First three backends have 200ms delay, second three have 100ms and last three have no delay.
+
+![leastloaded](./leastloaded.gif)
