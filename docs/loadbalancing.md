@@ -48,11 +48,11 @@ This is a good choice if a backend uses in-memory cache that is relevant for a s
 
 ## Least-loaded round robin
 
-Inspired by the [SRE Book](https://sre.google/sre-book/load-balancing-datacenter/#least-loaded-round-robin-WEswh9CN) I was reading at the time.
+Inspired by [this section](https://sre.google/sre-book/load-balancing-datacenter/#least-loaded-round-robin-WEswh9CN) in the SRE book I was reading at the time.
 
 ### Why use it?
 
-This is an alternative to round robin when some requests take longer time to resolve. This prevents the scenario when all heavy requests would hit the same backend, but are rather spread out across all other available backends.
+This is an alternative to round robin when some requests take longer time to resolve. This prevents the scenario when all heavy requests would hit the same backend. Instead the load is spread out across all other available backends.
 
 ### Screenshot
 
