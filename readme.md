@@ -3,7 +3,7 @@
 [![Go Build Test](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml)
 [![Docker Publish](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml)
 
-Load balance requests based on configured hostname accross configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
+Load balance requests based on configured hostname across configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
 Read more on [Reverse Proxy](/docs/reverseproxy.md) and [Load Balancing](./docs/loadbalancing.md).
 
