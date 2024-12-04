@@ -42,15 +42,15 @@ var (
 
 	FrontendHits = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "rplb_frontend_hits",
-		Help: "The total number of frontend hits",
+		Help: "Total number of frontend hits",
 	}, []string{"frontend_host"})
 	BackendRetries = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "rplb_backend_retries",
-		Help: "The total number of backend retries",
+		Help: "Total number of backend retries",
 	})
 	BackendHits = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "rplb_backend_hits",
-		Help: "The total number of backend hits",
+		Help: "Total number of backend hits",
 	}, []string{"backend_bool_name", "backend_url"})
 )
 

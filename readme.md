@@ -22,6 +22,8 @@ Read more on [Reverse Proxy](/docs/reverseproxy.md) and [Load Balancing](./docs/
 - 📈 Dashboard
    - Monitor
    - Traffic
+- 🧪 Instrumentation
+   - /metrics endpoint
 
 ![monitor](/docs/monitor.png)
 
@@ -126,6 +128,12 @@ docker build --build-arg="VERSION=$(git describe --tags --abbrev=0)" -t rplb .
 go test ./... -count=1
 ```
 
+### Instrumentation
+
+Using https://prometheus.io/docs/guides/go-application/.
+
+Exposing custom metrics.
+
 ## What is this?
 
 With this project I wanted to have two things:
@@ -142,12 +150,12 @@ With this project I wanted to have two things:
 
 ### TODO:
 
+- [ ] dashboard page title per page (Monitor - RPLB)
 - [ ] docs
 - [ ] algorithm state expiration?
 
 ### Some ideas
 
-- [ ] https://prometheus.io/docs/guides/go-application/
 - [ ] https://bazel-contrib.github.io/SIG-rules-authors/go-tutorial.html
 - [ ] https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
 - [ ] https://stackoverflow.com/questions/70442770/infinite-scrolling-carousel-css-only
