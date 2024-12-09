@@ -7,6 +7,10 @@ Load balance requests based on configured hostname across configured backends. I
 
 Read more on [Reverse Proxy](/docs/reverseproxy.md) and [Load Balancing](./docs/loadbalancing.md).
 
+### Related blog post
+
+https://developerschallenges.com/2024/12/09/my-latest-side-project-—-rplb/
+
 ## Features
 
 - ⚙️ Simple configuration
