@@ -54,7 +54,7 @@ You can run `RPLB` with these commands:
 ``` sh
 docker pull ghcr.io/dalibormesaric/rplb:latest
 
-docker run -d --rm -p 8000:8000 -p 8080:8080 -e RPLB_A=roundrobin -e RPLB_F=myapp.example.com,myapp -e RPLB_B=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
+docker run -d --restart=always -p 8000:8000 -p 8080:8080 -e RPLB_A=roundrobin -e RPLB_F=myapp.example.com,myapp -e RPLB_B=myapp,http://10.0.0.1:1234,myapp,http://10.0.0.2:1234,myapp,http://10.0.0.3:1234 --memory="64m" --memory-reservation="64m" --cpus="1" ghcr.io/dalibormesaric/rplb:latest
 ```
 
 ### Configuration
@@ -160,6 +160,8 @@ With this project I wanted to have two things:
 
 ### Some ideas
 
+- [ ] https://stackoverflow.com/questions/37321760/how-to-set-up-lets-encrypt-for-a-go-server-application
+- [ ] https://stackoverflow.com/questions/23439126/how-to-mount-a-host-directory-in-a-docker-container
 - [ ] https://bazel-contrib.github.io/SIG-rules-authors/go-tutorial.html
 - [ ] https://stackoverflow.com/questions/16512840/get-domain-name-from-ip-address-in-go
 - [ ] https://stackoverflow.com/questions/70442770/infinite-scrolling-carousel-css-only
