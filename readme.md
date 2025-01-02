@@ -2,6 +2,7 @@
 
 [![Go Build Test](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/go-build-test.yml)
 [![Docker Publish](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/dalibormesaric/rplb/actions/workflows/docker-publish.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dalibormesaric/rplb)](https://goreportcard.com/report/github.com/dalibormesaric/rplb)
 
 Load balance requests based on configured hostname across configured backends. It is primarily meant to be used for learning purposes in a home lab environment.
 
