@@ -5,7 +5,9 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dalibormesaric/rplb/internal/backend"
@@ -50,7 +52,7 @@ func ListenAndServe(frontends frontend.Frontends, bp backend.BackendPool, loadba
 var static embed.FS
 
 func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *http.Request) {
-	host, _, _ := net.SplitHostPort(r.Host)
+	host := hostname(r)
 	f := rp.frontends.Get(host)
 	if f == nil {
 		slog.Warn("Unknown frontend host", "host", host)
@@ -101,4 +103,21 @@ func (rp *reverseProxy) reverseProxyAndLoadBalance(w http.ResponseWriter, r *htt
 		retryTimeout *= 2
 		dashboard.BackendRetries.Inc()
 	}
+}
+
+func hostname(r *http.Request) string {
+	host := strings.TrimSpace(r.Host)
+
+	if strings.Contains(host, "://") {
+		if u, err := url.Parse(host); err == nil {
+			host = u.Host
+		}
+	}
+
+	h, _, err := net.SplitHostPort(host)
+	if err == nil {
+		return h
+	}
+
+	return host
 }
